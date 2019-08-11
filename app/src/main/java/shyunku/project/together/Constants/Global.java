@@ -4,8 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class Global {
-    public static final int CONSOLE_DEBUG_MODE = 0;
-    public static String version = "1.5.1 version";
+    public static final int CONSOLE_DEBUG_MODE = 1;
+    public static String version = "1.5.3-test version";
 
     //functions
     public static String getOppKey(){
