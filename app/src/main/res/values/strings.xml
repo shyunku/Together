@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">투게더</string>
+
+    <string name="status_boring_message">심심함</string>
+    <string name="status_hungry_message">배고픔</string>
+    <string name="status_out_message">외출함</string>
+    <string name="status_private_message">혼자 있고 싶음</string>
+    <string name="status_public_message">상관 없음</string>
+
+    <string name="status_boring_description">매우 심심하거나 지루한 상태에요</string>
+    <string name="status_hungry_description">너무 배고파요</string>
+    <string name="status_out_description">지금은 집에 없어요</string>
+    <string name="status_private_description">개인 시간을 방해받고 싶지 않아요</string>
+    <string name="status_public_description">누구든 와도 괜찮아요</string>
 </resources>

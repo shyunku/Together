@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/a"
+        android:id="@+id/status_private"
         android:title="사생활" />
     <item
-        android:id="@+id/b"
+        android:id="@+id/status_public"
         android:title="개방적" />
     <item
-        android:id="@+id/c"
+        android:id="@+id/status_boring"
         android:title="심심함" />
     <item
-        android:id="@+id/d"
+        android:id="@+id/status_hungry"
         android:title="배고픔" />
     <item
-        android:id="@+id/e"
+        android:id="@+id/status_out"
         android:title="외출" />
 </menu>

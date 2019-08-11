@@ -72,8 +72,6 @@ public class TogetherTalkActivity extends AppCompatActivity {
         final EditText sendableTextField = (EditText)findViewById(R.id.message_content);
         Button  sendButton = (Button)findViewById(R.id.send_message_button);
 
-
-
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,7 +91,7 @@ public class TogetherTalkActivity extends AppCompatActivity {
                 //ipm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
 
-                FirebaseManageEngine.sendNotificationMessage(chat.content);
+                FirebaseManageEngine.sendNotificationChatMessage(chat.content);
             }
         });
 

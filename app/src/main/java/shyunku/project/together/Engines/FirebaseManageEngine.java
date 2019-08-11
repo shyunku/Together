@@ -38,7 +38,7 @@ public class FirebaseManageEngine {
         return LocalDB;
     }
 
-    public static void sendNotificationMessage(final String msgContent) {
+    public static void sendNotificationChatMessage(final String msgContent) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -48,6 +48,41 @@ public class FirebaseManageEngine {
                     JSONObject notification = new JSONObject();
                     notification.put("body", msgContent);
                     notification.put("title", Global.getOwner());
+                    notification.put("tag", "chat");
+                    root.put("data", notification);
+                    root.put("to", Global.getOppKey());
+                    // FMC 메시지 생성 end
+
+                    URL Url = new URL("https://fcm.googleapis.com/fcm/send");
+                    HttpURLConnection conn = (HttpURLConnection) Url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setDoOutput(true);
+                    conn.setDoInput(true);
+                    conn.addRequestProperty("Authorization", "key=" + Global.FMC_SERVER_KEY);
+                    conn.setRequestProperty("Accept", "application/json");
+                    conn.setRequestProperty("Content-type", "application/json");
+                    OutputStream os = conn.getOutputStream();
+                    os.write(root.toString().getBytes("utf-8"));
+                    os.flush();
+                    conn.getResponseCode();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public static void sendNotificationRequestMessage(final String msgContent) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // FMC 메시지 생성 start
+                    JSONObject root = new JSONObject();
+                    JSONObject notification = new JSONObject();
+                    notification.put("body", msgContent);
+                    notification.put("title", Global.getOwner()+"님의 요청");
+                    notification.put("tag", "request");
                     root.put("data", notification);
                     root.put("to", Global.getOppKey());
                     // FMC 메시지 생성 end

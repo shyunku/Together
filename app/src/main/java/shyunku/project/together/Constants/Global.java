@@ -5,7 +5,7 @@ import java.util.Locale;
 
 public class Global {
     public static final int CONSOLE_DEBUG_MODE = 0;
-    public static String version = "1.3.0";
+    public static String version = "1.5.1 version";
 
     //functions
     public static String getOppKey(){

@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -57,11 +58,15 @@ public class MainActivity extends AppCompatActivity {
                     String gainedName = snapshot.child("name").getValue().toString();
                     if(gainedName.equals(Global.getOwner())){
                         final TextView statusView = findViewById(R.id.my_status);
-                        final TextView statusMessage = findViewById(R.id.my_status_message);
+                        final TextView statusDescription = findViewById(R.id.my_status_message);
                         final TextView happinessView = findViewById(R.id.my_happiness);
 
+                        final ConstraintLayout myStatusBG = findViewById(R.id.my_status_color);
+
                         statusView.setText(me.status);
+                        statusDescription.setText(me.getStatusDescription(MainActivity.this));
                         happinessView.setText(me.happiness+"/100");
+                        myStatusBG.setBackgroundResource(me.getStatusBackgroundColorTag(MainActivity.this));
                         return;
                     }
                 }
@@ -83,12 +88,15 @@ public class MainActivity extends AppCompatActivity {
                     String gainedName = snapshot.child("name").getValue().toString();
                     if(gainedName.equals(Global.getOpper())){
                         final TextView statusView = findViewById(R.id.opp_status);
-                        final TextView statusMessage = findViewById(R.id.opp_status_message);
+                        final TextView statusDescription = findViewById(R.id.opp_status_message);
                         final TextView happinessView = findViewById(R.id.opp_happiness);
 
+                        final ConstraintLayout oppStatusBG = findViewById(R.id.opp_status_color);
 
                         statusView.setText(opp.status);
+                        statusDescription.setText(opp.getStatusDescription(MainActivity.this));
                         happinessView.setText(opp.happiness+"/100");
+                        oppStatusBG.setBackgroundResource(opp.getStatusBackgroundColorTag(MainActivity.this));
                         return;
                     }
                 }
@@ -173,5 +181,85 @@ public class MainActivity extends AppCompatActivity {
                         // Log and toast
                     }
                 });
+
+        final Button requestButton = findViewById(R.id.request_button);
+        requestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(MainActivity.this, view);
+                popupMenu.getMenuInflater().inflate(R.menu.request_option, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        String sender = Global.getOwner()+"님이 ";
+                        switch(menuItem.getItemId()){
+                            case R.id.request_call:
+                                FirebaseManageEngine.sendNotificationRequestMessage(sender+"당신을 호출했습니다!");
+                                break;
+                            case R.id.request_db:
+                                FirebaseManageEngine.sendNotificationRequestMessage(sender+"담배를 피자고 요청했습니다!");
+                                break;
+                            case R.id.request_help:
+                                FirebaseManageEngine.sendNotificationRequestMessage(sender+"긴급 구조를 요청했습니다!");
+                                break;
+                            case R.id.request_inner_meal:
+                                FirebaseManageEngine.sendNotificationRequestMessage(sender+"먹을 것을 시켜 먹자고 합니다!");
+                                break;
+                            case R.id.request_out:
+                                FirebaseManageEngine.sendNotificationRequestMessage(sender+"나가자고 요청했습니다!");
+                                break;
+                            case R.id.request_outer_meal:
+                                FirebaseManageEngine.sendNotificationRequestMessage(sender+"나가서 뭔가 먹자고 요청했습니다!");
+                                break;
+                        }
+                        return true;
+                    }
+                });
+                popupMenu.show();
+            }
+        });
+
+        final Button updateStatusButton = findViewById(R.id.update_status_button);
+        updateStatusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(MainActivity.this, view);
+                popupMenu.getMenuInflater().inflate(R.menu.status_option, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        String StatusMessage = "";
+
+                        switch(menuItem.getItemId()){
+                            case R.id.status_boring:
+                                StatusMessage = getResources().getString(R.string.status_boring_message);
+                                break;
+                            case R.id.status_hungry:
+                                StatusMessage = getResources().getString(R.string.status_hungry_message);
+                                break;
+                            case R.id.status_out:
+                                StatusMessage = getResources().getString(R.string.status_out_message);
+                                break;
+                            case R.id.status_private:
+                                StatusMessage = getResources().getString(R.string.status_private_message);
+                                break;
+                            case R.id.status_public:
+                                StatusMessage = getResources().getString(R.string.status_public_message);
+                                break;
+                        }
+
+                        me.status = StatusMessage;
+
+                        Map<String, Object> postVal = me.toMap();
+                        Map<String, Object> childUpdates = new HashMap<>();
+                        childUpdates.put(Global.rootName+"/users/"+Global.getOwner(), postVal);
+
+                        FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
+                        return true;
+                    }
+                });
+                popupMenu.show();
+            }
+        });
     }
 }

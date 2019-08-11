@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/request_call"
         android:title="호출"
         />
     <item
+        android:id="@+id/request_db"
         android:title="담배"
         />
     <item
+        android:id="@+id/request_inner_meal"
         android:title="밥 주문"
         />
     <item
+        android:id="@+id/request_outer_meal"
         android:title="외식"
         />
     <item
+        android:id="@+id/request_out"
         android:title="외출"
         />
     <item
-        android:title="투톡 확인"
+        android:id="@+id/request_help"
+        android:title="긴급 도움 요청"
         />
 </menu>

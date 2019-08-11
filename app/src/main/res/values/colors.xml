@@ -7,6 +7,9 @@
     <color name="light_dark">#5A5A5A</color>
     <color name="status_private">#FF0000</color>
     <color name="pure_white">#FFFFFF</color>
-    <color name="status_opened">#00BFFF</color>
+    <color name="status_opened">#00FF3C</color>
     <color name="light_gray">#D8D8D8</color>
+    <color name="status_out">#C8AA00</color>
+    <color name="status_hungry">#0062FF</color>
+    <color name="status_boring">#4B00CE</color>
 </resources>
