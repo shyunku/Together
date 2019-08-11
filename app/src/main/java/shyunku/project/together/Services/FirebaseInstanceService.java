@@ -1,5 +1,7 @@
 package shyunku.project.together.Services;
 
+import android.app.ActivityManager;
+import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,6 +10,7 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 
@@ -17,12 +20,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import org.json.JSONObject;
-
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import shyunku.project.together.Activities.MainActivity;
 import shyunku.project.together.Activities.TogetherTalkActivity;
 import shyunku.project.together.Constants.Global;
@@ -30,12 +27,10 @@ import shyunku.project.together.Engines.LogEngine;
 import shyunku.project.together.R;
 
 public class FirebaseInstanceService extends FirebaseMessagingService {
-    private final int NOTIFICATION_ID = 999;
-    private final String NOTIFICATION_CHANNEL_ID = "TOGETHER_TALK";
-
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+        if(isForeground())return;
         sendNotification(remoteMessage.getData().get("title"), remoteMessage.getData().get("body"));
     }
 
@@ -46,9 +41,9 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
 
     private void sendNotification(String title, String message){
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, Global.NOTIFICATION_CHAT_CHANNEL_ID);
 
-        NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "channel_name", NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationChannel notificationChannel = new NotificationChannel(Global.NOTIFICATION_CHAT_CHANNEL_ID, "channel_name", NotificationManager.IMPORTANCE_DEFAULT);
         notificationManager.createNotificationChannel(notificationChannel);
 
         Intent resultIntent = new Intent(this, TogetherTalkActivity.class);
@@ -65,6 +60,12 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
                 .setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
 
-        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
+        notificationManager.notify(Global.NOTIFICATION_CHAT_ID, notificationBuilder.build());
+    }
+
+    public boolean isForeground(){
+        ActivityManager.RunningAppProcessInfo info = new ActivityManager.RunningAppProcessInfo();
+        ActivityManager.getMyMemoryState(info);
+        return (info.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND || info.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE);
     }
 }
