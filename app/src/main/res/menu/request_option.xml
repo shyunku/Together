@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="호출"
+        />
+    <item
+        android:title="담배"
+        />
+    <item
+        android:title="밥 주문"
+        />
+    <item
+        android:title="외식"
+        />
+    <item
+        android:title="외출"
+        />
+    <item
+        android:title="투톡 확인"
+        />
+</menu>
