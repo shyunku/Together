@@ -85,6 +85,7 @@ public class FirebaseManageEngine {
                     notification.put("tag", "request");
                     root.put("data", notification);
                     root.put("to", Global.getOppKey());
+
                     // FMC 메시지 생성 end
 
                     URL Url = new URL("https://fcm.googleapis.com/fcm/send");

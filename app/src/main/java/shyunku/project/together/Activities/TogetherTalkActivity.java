@@ -38,6 +38,7 @@ import java.util.Map;
 import shyunku.project.together.Adapters.ChatAdapter;
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
+import shyunku.project.together.Engines.LogEngine;
 import shyunku.project.together.Objects.Chat;
 import shyunku.project.together.R;
 import shyunku.project.together.Services.FirebaseInstanceService;

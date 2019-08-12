@@ -11,9 +11,10 @@ import shyunku.project.together.Activities.MainActivity;
 import shyunku.project.together.R;
 
 public class User {
-    public String name;
-    public String status;
-    public int happiness;
+    public String name = "";
+    public String status = "";
+    public int happiness = 0;
+    public String FCMtoken = "EMPTY";
 
     public User(){
 
@@ -49,6 +50,7 @@ public class User {
         result.put("happiness", this.happiness);
         result.put("name", this.name);
         result.put("status", this.status);
+        result.put("token", this.FCMtoken);
 
         return result;
     }

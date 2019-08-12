@@ -59,7 +59,7 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
         notificationBuilder.setContentIntent(pendingIntent)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.mipmap.main_icon_real)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true)

@@ -33,9 +33,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import shyunku.project.together.Fragments.GoogleMapFragment;
 import shyunku.project.together.R;
 
-public class LocationActivity extends AppCompatActivity implements LocationListener {
+public class LocationActivity extends AppCompatActivity{
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -50,17 +51,10 @@ public class LocationActivity extends AppCompatActivity implements LocationListe
         else
             checkRunTimePermission();
 
-        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        String provider;
-
-        provider = locationManager.getBestProvider(criteria, false);
-        if(provider != null && !provider.equals("")){
-            Location location = locationManager.getLastKnownLocation(provider);
-            locationManager.requestLocationUpdates(provider, 1000, 1, this);
-            if(location != null) onLocationChanged(location);
-            else Toast.makeText(getBaseContext(), "Location can't be retrieved!", Toast.LENGTH_SHORT).show();
-        }else Toast.makeText(getBaseContext(), "Provider Not Found!", Toast.LENGTH_SHORT).show();
+        if(savedInstanceState == null){
+            GoogleMapFragment mainFragment = new GoogleMapFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, mainFragment, "main").commit();
+        }
     }
 
     @Override
@@ -159,46 +153,5 @@ public class LocationActivity extends AppCompatActivity implements LocationListe
     public boolean checkLocationServicesStatus() {
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)  || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        final TextView textLocationAddress = (TextView)findViewById(R.id.textLocation);
-        final MapView mapView = (MapView)findViewById(R.id.googleMap);
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-
-
-        String address = getCurrentAddress(latitude, longitude);
-        textLocationAddress.setText(address);
-
-        final LatLng loc = new LatLng(latitude, longitude);
-        final MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(loc)
-                .title("내 위치")
-                .snippet("??");
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                googleMap.addMarker(markerOptions);
-                googleMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
-                googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
-            }
-        });
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
     }
 }

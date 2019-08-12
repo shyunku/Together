@@ -8,6 +8,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +35,7 @@ import java.util.Map;
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Engines.LogEngine;
+import shyunku.project.together.Fragments.GoogleMapFragment;
 import shyunku.project.together.Objects.User;
 import shyunku.project.together.R;
 import shyunku.project.together.Services.FirebaseInstanceService;
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Global.setCurrentDeviceID(Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID));
+        new LogEngine().sendLog("DEVICE_ID = "+Global.curDeviceID);
         initialSetting();
 
         //my info
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     me = snapshot.getValue(User.class);
+                    registerFCMKey();
                     String gainedName = snapshot.child("name").getValue().toString();
                     if(gainedName.equals(Global.getOwner())){
                         final TextView statusView = findViewById(R.id.my_status);
@@ -90,13 +95,14 @@ public class MainActivity extends AppCompatActivity {
                         final TextView statusView = findViewById(R.id.opp_status);
                         final TextView statusDescription = findViewById(R.id.opp_status_message);
                         final TextView happinessView = findViewById(R.id.opp_happiness);
-
                         final ConstraintLayout oppStatusBG = findViewById(R.id.opp_status_color);
 
                         statusView.setText(opp.status);
                         statusDescription.setText(opp.getStatusDescription(MainActivity.this));
                         happinessView.setText(opp.happiness+"/100");
                         oppStatusBG.setBackgroundResource(opp.getStatusBackgroundColorTag(MainActivity.this));
+
+                        Global.setOppFCMkey(snapshot.child("token").getValue().toString());
                         return;
                     }
                 }
@@ -165,22 +171,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            new LogEngine().sendLog("cannot gain token");
-                            return;
-                        }
-
-                        // Get new Instance ID token
-                        String token = task.getResult().getToken();
-                        new LogEngine().sendLog("token = "+token);
-                        // Log and toast
-                    }
-                });
 
         final Button requestButton = findViewById(R.id.request_button);
         requestButton.setOnClickListener(new View.OnClickListener() {
@@ -270,5 +260,33 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+        getSupportActionBar().hide();
+    }
+
+    public void registerFCMKey(){
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            new LogEngine().sendLog("cannot gain token");
+                            return;
+                        }
+
+                        // Get new Instance ID token
+                        String token = task.getResult().getToken();
+                        new LogEngine().sendLog("token = "+token);
+
+                        me.FCMtoken = token;
+                        Map<String, Object> postVal = me.toMap();
+                        Map<String, Object> childUpdates = new HashMap<>();
+                        childUpdates.put(Global.rootName+"/users/"+Global.getOwner(), postVal);
+
+                        FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
+                        // Log and toast
+                    }
+                });
     }
 }

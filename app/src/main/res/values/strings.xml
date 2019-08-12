@@ -13,4 +13,6 @@
     <string name="status_private_description">개인 시간을 방해받고 싶지 않아요</string>
     <string name="status_public_description">누구든 와도 괜찮아요</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="google_maps_key">AIzaSyCK7FGuhzmKSH91lp4vOXRqolhNliR7WL8</string>
 </resources>
