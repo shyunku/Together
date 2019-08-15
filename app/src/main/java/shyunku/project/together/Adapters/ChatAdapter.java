@@ -45,10 +45,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Chat chat = chatList.get(position);
-        if(chat.sender.equals(Global.getOwner()))
-            holder.sender.setText("나");
-        else
-            holder.sender.setText(chat.sender);
         holder.content.setText(chat.content);
         holder.isRead.setText(chat.isRead?"읽음":"");
         holder.timestamp.setText(chat.timestamp);
@@ -66,14 +62,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView sender;
         public TextView content;
         public TextView timestamp;
         public TextView isRead;
 
         public ViewHolder(View v){
             super(v);
-            sender = (TextView) v.findViewById(R.id.sender_view);
             content = (TextView) v.findViewById(R.id.content_view);
             timestamp = (TextView) v.findViewById(R.id.timestamp_view);
             isRead = (TextView)v.findViewById(R.id.isread_view);

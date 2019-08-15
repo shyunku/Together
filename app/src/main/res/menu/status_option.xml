@@ -10,6 +10,12 @@
         android:id="@+id/status_boring"
         android:title="심심함" />
     <item
+        android:id="@+id/status_sleepy"
+        android:title="피곤함" />
+    <item
+        android:id="@+id/status_sleeping"
+        android:title="수면 중" />
+    <item
         android:id="@+id/status_hungry"
         android:title="배고픔" />
     <item

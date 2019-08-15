@@ -9,7 +9,15 @@
     <color name="pure_white">#FFFFFF</color>
     <color name="status_opened">#00FF3C</color>
     <color name="light_gray">#D8D8D8</color>
-    <color name="status_out">#C8AA00</color>
+    <color name="status_out">#C8C100</color>
     <color name="status_hungry">#0062FF</color>
     <color name="status_boring">#4B00CE</color>
+    <color name="DarkTheme">#282828</color>
+    <color name="lightDarkTheme">#888888</color>
+    <color name="send_chat_background">#FFFA5E</color>
+    <color name="status_sleepy">#FFA620</color>
+    <color name="status_sleeping">#B8B8B8</color>
+    <color name="pure_red">#FF0000</color>
+    <color name="transaction_blue">#00BBFF</color>
+    <color name="transaction_red">#FF3227</color>
 </resources>

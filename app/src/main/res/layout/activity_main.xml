@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/DarkTheme"
     tools:context=".Activities.MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,7 +33,7 @@
                 android:id="@+id/my_status_color"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/cardview_dark_background">
+                android:background="@color/light_gray">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraintLayout3"
@@ -41,7 +42,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
-                    android:background="@color/pure_white"
+                    android:background="@color/light_dark"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -53,7 +54,7 @@
                         android:fontFamily="@font/rixgom"
                         android:gravity="center"
                         android:text="내 프로필"
-                        android:textColor="@color/PureDark"
+                        android:textColor="@color/pure_white"
                         android:textSize="18sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +70,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
-                    android:background="@color/pure_white"
+                    android:background="@color/light_dark"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -96,6 +97,7 @@
                         android:fontFamily="@font/rixgom"
                         android:gravity="center_vertical"
                         android:text="기분 지수 : "
+                        android:textColor="@color/pure_white"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -111,6 +113,7 @@
                         android:fontFamily="@font/rixgom"
                         android:gravity="center"
                         android:text="-/100"
+                        android:textColor="@color/pure_white"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.457"
@@ -125,6 +128,7 @@
                         android:fontFamily="@font/rixgom"
                         android:gravity="center"
                         android:text="개방적"
+                        android:textColor="@color/pure_white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -150,7 +154,7 @@
                 android:id="@+id/opp_status_color"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/cardview_dark_background">
+                android:background="@color/light_gray">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraintLayout4"
@@ -159,7 +163,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
-                    android:background="@color/pure_white"
+                    android:background="@color/light_dark"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -170,8 +174,8 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/rixgom"
                         android:gravity="center"
-                        android:text="조재훈의 프로필"
-                        android:textColor="@color/PureDark"
+                        android:text="-의 프로필"
+                        android:textColor="@color/pure_white"
                         android:textSize="18sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -187,7 +191,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
-                    android:background="@color/pure_white"
+                    android:background="@color/light_dark"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -200,6 +204,7 @@
                         android:fontFamily="@font/rixgom"
                         android:gravity="center"
                         android:text="사생활"
+                        android:textColor="@color/pure_white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -212,6 +217,7 @@
                         android:fontFamily="@font/rixgom"
                         android:gravity="center_vertical"
                         android:text="기분 지수 : "
+                        android:textColor="@color/pure_white"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -227,6 +233,7 @@
                         android:fontFamily="@font/rixgom"
                         android:gravity="center"
                         android:text="-/100"
+                        android:textColor="@color/pure_white"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/textView7"
@@ -279,15 +286,26 @@
         app:layout_constraintTop_toBottomOf="@+id/request_button" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/money_management_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:fontFamily="@font/rixgom"
-        android:text="공용 메모"
+        android:text="돈 관리"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/shared_memo_button"
+        app:layout_constraintTop_toBottomOf="@+id/go_together_talk" />
+
+    <Button
+        android:id="@+id/shared_memo_button"
+        android:layout_width="195dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/rixgom"
+        android:text="공용 메모"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/go_together_talk" />
 
@@ -300,7 +318,7 @@
         android:fontFamily="@font/rixgom"
         android:text="상태 업데이트"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button5" />
+        app:layout_constraintTop_toBottomOf="@+id/money_management_button" />
 
     <Button
         android:id="@+id/update_happiness_button"
@@ -313,7 +331,7 @@
         android:text="기분 지수 업데이트"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/update_status_button"
-        app:layout_constraintTop_toBottomOf="@+id/button5" />
+        app:layout_constraintTop_toBottomOf="@+id/money_management_button" />
 
     <Button
         android:id="@+id/view_our_location"
@@ -352,6 +370,7 @@
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/rixgom"
         android:text="developer.shyunku Together 1.0.1 ver"
+        android:textColor="@color/pure_white"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

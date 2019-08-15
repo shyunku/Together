@@ -23,6 +23,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import shyunku.project.together.Activities.MainActivity;
 import shyunku.project.together.Activities.TogetherTalkActivity;
 import shyunku.project.together.Constants.Global;
+import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Engines.LogEngine;
 import shyunku.project.together.R;
 
@@ -30,12 +31,19 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+
+        FirebaseManageEngine.noticeWhoIam(this);
+        FirebaseManageEngine.getOppKeyFromFirebaseServer();
+
         String MessageTag = remoteMessage.getData().get("tag");
+        new LogEngine().sendLog("Message Received, content = "+remoteMessage.getData().get("body"));
         if(MessageTag.equals("chat")) {
             if (isForeground()) return;
             sendChatNotification(remoteMessage.getData().get("title"), remoteMessage.getData().get("body"));
         }else if(MessageTag.equals("request")){
             sendRequestNotification(remoteMessage.getData().get("title"), remoteMessage.getData().get("body"));
+        }else if(MessageTag.equals("response")){
+            sendResponseNotification(remoteMessage.getData().get("title"), remoteMessage.getData().get("body"));
         }
     }
 
@@ -53,7 +61,7 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
 
         Intent resultIntent = new Intent(this, TogetherTalkActivity.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(TogetherTalkActivity.class);
+        stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(resultIntent);
 
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -77,19 +85,47 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
 
         Intent resultIntent = new Intent(this, TogetherTalkActivity.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(TogetherTalkActivity.class);
+        stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(resultIntent);
 
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        notificationBuilder.setContentIntent(pendingIntent)
-                .setSmallIcon(R.mipmap.ic_launcher)
+        Intent actionIntent_yes = new Intent(this, ActionService.class);
+        Intent actionIntent_no = new Intent(this, ActionService.class);
+        actionIntent_yes.setAction(ActionService.RESPONSE_YES_ACTION_FLAG);
+        actionIntent_no.setAction(ActionService.RESPONSE_NO_ACTION_FLAG);
+        PendingIntent piAction1 = PendingIntent.getService(this, 0, actionIntent_yes, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piAction2 = PendingIntent.getService(this, 0, actionIntent_no, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        notificationBuilder
+                .setSmallIcon(R.mipmap.main_icon_real)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setAutoCancel(true)
+                .addAction(R.drawable.ic_send_yes, "승낙", piAction1)
+                .addAction(R.drawable.ic_send_no, "거부", piAction2)
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+
+        notificationManager.notify(Global.NOTIFICATION_REQUEST_ID, notificationBuilder.build());
+    }
+
+    private void sendResponseNotification(String title, String message){
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, Global.NOTIFICATION_CHAT_CHANNEL_ID);
+
+        NotificationChannel notificationChannel = new NotificationChannel(Global.NOTIFICATION_CHAT_CHANNEL_ID, "channel_name", NotificationManager.IMPORTANCE_DEFAULT);
+        notificationManager.createNotificationChannel(notificationChannel);
+
+        //PendingIntent pendingIntent = new PendingIntent(sas);
+
+        notificationBuilder
+                .setSmallIcon(R.mipmap.main_icon_real)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
 
-        notificationManager.notify(Global.NOTIFICATION_CHAT_ID, notificationBuilder.build());
+        notificationManager.notify(Global.NOTIFICATON_RESPONSE_ID, notificationBuilder.build());
     }
 
     public boolean isForeground(){

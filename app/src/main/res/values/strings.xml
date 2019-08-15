@@ -6,12 +6,16 @@
     <string name="status_out_message">외출함</string>
     <string name="status_private_message">혼자 있고 싶음</string>
     <string name="status_public_message">상관 없음</string>
+    <string name="status_sleeping_message">수면 중</string>
+    <string name="status_sleepy_message">피곤함</string>
 
-    <string name="status_boring_description">매우 심심하거나 지루한 상태에요</string>
+    <string name="status_boring_description">심심하거나 지루해요</string>
     <string name="status_hungry_description">너무 배고파요</string>
     <string name="status_out_description">지금은 집에 없어요</string>
     <string name="status_private_description">개인 시간을 방해받고 싶지 않아요</string>
     <string name="status_public_description">누구든 와도 괜찮아요</string>
+    <string name="status_sleepy_description">너무 피곤해요</string>
+    <string name="status_sleeping_description">자고 있어요</string>
     <string name="title_activity_maps">Map</string>
 
     <string name="google_maps_key">AIzaSyCK7FGuhzmKSH91lp4vOXRqolhNliR7WL8</string>

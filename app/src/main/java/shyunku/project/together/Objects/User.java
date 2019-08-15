@@ -29,6 +29,10 @@ public class User {
             return context.getResources().getString(R.string.status_out_description);
         if(status.equals(context.getResources().getString(R.string.status_private_message)))
             return context.getResources().getString(R.string.status_private_description);
+        if(status.equals(context.getResources().getString(R.string.status_sleepy_message)))
+            return context.getResources().getString(R.string.status_sleepy_description);
+        if(status.equals(context.getResources().getString(R.string.status_sleeping_message)))
+            return context.getResources().getString(R.string.status_sleeping_description);
         return context.getResources().getString(R.string.status_public_description);
     }
 
@@ -41,6 +45,10 @@ public class User {
             return R.color.status_out;
         if(status.equals(context.getResources().getString(R.string.status_private_message)))
             return R.color.status_private;
+        if(status.equals(context.getResources().getString(R.string.status_sleepy_message)))
+            return R.color.status_sleepy;
+        if(status.equals(context.getResources().getString(R.string.status_sleeping_message)))
+            return R.color.status_sleeping;
         return R.color.status_opened;
     }
 

@@ -43,7 +43,10 @@
         </activity>
         <activity
             android:name=".Activities.LocationActivity">
+        </activity>
 
+        <activity
+            android:name=".Activities.MoneyTransactionActivity">
         </activity>
 
         <service
@@ -53,6 +56,10 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
+        </service>
+
+        <service android:name=".Services.ActionService"
+            android:exported="false">
         </service>
     </application>
 

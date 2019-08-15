@@ -8,6 +8,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,12 +67,11 @@ public class TogetherTalkActivity extends AppCompatActivity {
         mAdapter = new ChatAdapter(getBaseContext(), chats);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
     }
 
     public void initialSetting(){
         final EditText sendableTextField = (EditText)findViewById(R.id.message_content);
-        Button  sendButton = (Button)findViewById(R.id.send_message_button);
+        ImageButton  sendButton = (ImageButton)findViewById(R.id.send_message_button);
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,6 +82,7 @@ public class TogetherTalkActivity extends AppCompatActivity {
 
                 Chat chat = new Chat(Global.getOwner(), Global.sdf.format(cal.getTime()), false, sendableTextField.getText().toString(), key);
 
+                if(sendableTextField.getText().length()==0)return;
                 sendableTextField.setText("");
 
                 Map<String, Object> postVal = chat.toMap();
@@ -135,6 +136,8 @@ public class TogetherTalkActivity extends AppCompatActivity {
 
             }
         });
+
+        getSupportActionBar().hide();
     }
 
     private ValueEventListener updateReader = new ValueEventListener() {

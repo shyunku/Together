@@ -10,12 +10,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         Global.setCurrentDeviceID(Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID));
         new LogEngine().sendLog("DEVICE_ID = "+Global.curDeviceID);
+        Toast.makeText(getApplicationContext(), "ID = "+Global.curDeviceID, Toast.LENGTH_LONG);
         initialSetting();
 
         //my info
@@ -125,19 +128,37 @@ public class MainActivity extends AppCompatActivity {
         updateHappinessBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                final EditText editText = new EditText(MainActivity.this);
-                final ConstraintLayout container = new ConstraintLayout(MainActivity.this);
-                final ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.leftMargin = getResources().getDimensionPixelSize(R.dimen.alert_dialog_internal_margin);
-                params.rightMargin =getResources().getDimensionPixelSize(R.dimen.alert_dialog_internal_margin);
+                View viewGroup = inflater.inflate(R.layout.happiness_update, (ViewGroup)findViewById(R.id.happiness_update_layout));
+                final SeekBar seekBar = (SeekBar)viewGroup.findViewById(R.id.happiness_seekBar);
+                final TextView seekBarValue = (TextView)viewGroup.findViewById(R.id.happiness_monitor);
 
-                editText.setLayoutParams(params);
-                editText.setHint("기분 지수를 입력해주세요. (1~100)");
-                container.addView(editText);
+                seekBarValue.setText(me.happiness+"");
+                seekBar.setMax(100);
+                seekBar.setMin(1);
+                seekBar.setProgress(me.happiness);
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                        seekBarValue.setText(i+"");
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
+
+
 
                 builder.setTitle("기분 지수 업데이트");
-                builder.setView(container);
+                builder.setView(viewGroup );
 
                 builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
                     @Override
@@ -149,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                 builder.setPositiveButton("업데이트", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        me.happiness = Integer.parseInt(editText.getText().toString());
+                        me.happiness = Integer.parseInt(seekBar.getProgress()+"");
 
                         Map<String, Object> postVal = me.toMap();
                         Map<String, Object> childUpdates = new HashMap<>();
@@ -202,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
                                 FirebaseManageEngine.sendNotificationRequestMessage(sender+"나가서 뭔가 먹자고 요청했습니다!");
                                 break;
                         }
+                        Global.makeToast(MainActivity.this, "요청을 보냈습니다!");
                         return true;
                     }
                 });
@@ -226,6 +248,12 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             case R.id.status_hungry:
                                 StatusMessage = getResources().getString(R.string.status_hungry_message);
+                                break;
+                            case R.id.status_sleeping:
+                                StatusMessage = getResources().getString(R.string.status_sleeping_message);
+                                break;
+                            case R.id.status_sleepy:
+                                StatusMessage = getResources().getString(R.string.status_sleepy_message);
                                 break;
                             case R.id.status_out:
                                 StatusMessage = getResources().getString(R.string.status_out_message);
@@ -261,6 +289,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final Button goMoneyTransactionPage = (Button)findViewById(R.id.money_management_button);
+        goMoneyTransactionPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, MoneyTransactionActivity.class);
+                startActivity(intent);
+            }
+        });
 
         getSupportActionBar().hide();
     }
@@ -277,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // Get new Instance ID token
                         String token = task.getResult().getToken();
-                        new LogEngine().sendLog("token = "+token);
+                        //new LogEngine().sendLog("token = "+token);
 
                         me.FCMtoken = token;
                         Map<String, Object> postVal = me.toMap();
