@@ -20,4 +20,5 @@
     <color name="pure_red">#FF0000</color>
     <color name="transaction_blue">#00BBFF</color>
     <color name="transaction_red">#FF3227</color>
+    <color name="status_inclass">#FF0059</color>
 </resources>

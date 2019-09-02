@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         statusTitle.setText(Global.getOpper()+"의 프로필");
 
         final TextView Ver = findViewById(R.id.version);
-        Ver.setText(Global.version +" -  "+Global.getOwner()+" 전용 APP");
+        Ver.setText(Global.version +" -  "+Global.getOwner()+" 전용 APP - "+(Global.DEBUG_MODE?"Debug":"Release")+" mode");
         final Button updateHappinessBtn = findViewById(R.id.update_happiness_button);
         updateHappinessBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -263,6 +263,9 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             case R.id.status_public:
                                 StatusMessage = getResources().getString(R.string.status_public_message);
+                                break;
+                            case R.id.status_inclass:
+                                StatusMessage = getResources().getString(R.string.status_inclass_message);
                                 break;
                         }
 

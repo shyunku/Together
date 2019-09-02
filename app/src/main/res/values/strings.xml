@@ -8,6 +8,7 @@
     <string name="status_public_message">상관 없음</string>
     <string name="status_sleeping_message">수면 중</string>
     <string name="status_sleepy_message">피곤함</string>
+    <string name="status_inclass_message">수업 중</string>
 
     <string name="status_boring_description">심심하거나 지루해요</string>
     <string name="status_hungry_description">너무 배고파요</string>
@@ -16,7 +17,9 @@
     <string name="status_public_description">누구든 와도 괜찮아요</string>
     <string name="status_sleepy_description">너무 피곤해요</string>
     <string name="status_sleeping_description">자고 있어요</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="status_inclass_description">수업 중이에요</string>
 
+
+    <string name="title_activity_maps">Map</string>
     <string name="google_maps_key">AIzaSyCK7FGuhzmKSH91lp4vOXRqolhNliR7WL8</string>
 </resources>

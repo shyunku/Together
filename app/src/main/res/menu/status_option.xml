@@ -7,6 +7,9 @@
         android:id="@+id/status_public"
         android:title="개방적" />
     <item
+        android:id="@+id/status_inclass"
+        android:title="수업 중" />
+    <item
         android:id="@+id/status_boring"
         android:title="심심함" />
     <item
