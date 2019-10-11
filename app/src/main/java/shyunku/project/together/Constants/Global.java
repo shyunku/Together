@@ -13,7 +13,7 @@ import shyunku.project.together.Engines.LogEngine;
 
 public class Global {
     public static final boolean DEBUG_MODE = false;
-    public static String version = "v0.10.1-3.04u";
+    public static String version = "v0.10.2-3.05w";
     public static String curDeviceID = "";
     public static String oppFCMkey = "";
 
@@ -47,8 +47,8 @@ public class Global {
     };
     public static final String rootName = "party-01482";
     public static final SimpleDateFormat sdf = new SimpleDateFormat("M월 d일 a h:mm", Locale.KOREA);
-    public static final SimpleDateFormat transactionDateFormat = new SimpleDateFormat("yyMMddhhmmss");
-    public static final SimpleDateFormat transactionReleaseDateFormat = new SimpleDateFormat("YY.MM.dd a h:mm", Locale.KOREA);
+    public static final SimpleDateFormat transactionDateFormat = new SimpleDateFormat("yyMMddHHmmss");
+    public static final SimpleDateFormat transactionReleaseDateFormat = new SimpleDateFormat("yy.MM.dd a h:mm:ss", Locale.KOREA);
     public static final String FMC_SERVER_KEY = "AAAARb8XDHU:APA91bFj6ysDKxywfmeQDRL4kMPAZj2jgWAGlKtjL7cpXkRhpiyjaWPo2ENO_8sdK8KajOFCoYFh7quvmu2q6KF9BqN4Irf_j1ihEPts51cGOzFVf0kJfkf0FtVOjPcQ6XYjIbLz9PQS";
     public static final String[] DEBUG_DEVICE_ID={
             "a045f52f82e2166e",

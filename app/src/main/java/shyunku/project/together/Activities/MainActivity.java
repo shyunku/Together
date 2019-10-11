@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
         final TextView Ver = findViewById(R.id.version);
         deviceIDt.setText("Device ID : "+Global.curDeviceID);
-        Ver.setText(Global.version +" -  "+Global.getOwner()+" 전용 APP - "+(Global.DEBUG_MODE?"Debug":"Release")+" mode");
+        Ver.setText(Global.version +" |  "+Global.getOwner()+" 전용, "+(Global.DEBUG_MODE?"Debug":"Release"));
         final Button updateHappinessBtn = findViewById(R.id.update_happiness_button);
         updateHappinessBtn.setOnClickListener(new View.OnClickListener() {
             @Override
