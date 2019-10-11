@@ -28,11 +28,15 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import shyunku.project.together.Adapters.TransactionAdapter;
@@ -76,12 +80,59 @@ public class MoneyTransactionActivity extends AppCompatActivity {
 
         Button addButton = (Button)findViewById(R.id.transaction_add_button);
         Button settleButton = (Button)findViewById(R.id.transaction_settle_button);
+        Button settleAllButton = (Button)findViewById(R.id.settle_all_button);
 
         final TextView totalValue = (TextView)findViewById(R.id.transaction_value_view);
         final TextView arrowDirection = (TextView) findViewById(R.id.arrow_direction);
 
         leftside.setText(Global.getOwner());
         rightside.setText(Global.getOpper());
+
+        settleAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String stamp = null;
+                for(int i=transactions.size()-1;i>=0;i--)
+                    if(!transactions.get(i).isGeneral){
+                        stamp = transactions.get(i).timestamp;
+                        break;
+                    }
+                if(stamp == null)return;
+
+                try {
+                    final long standTamp = Global.transactionDateFormat.parse(stamp).getTime();
+
+                    final DatabaseReference myref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/transactions");
+                    myref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for(DataSnapshot data : dataSnapshot.getChildren()){
+                                String str = data.child("timestamp").getValue().toString();
+                                new LogEngine().sendLog("str : "+str);
+                                try {
+                                    long time = Global.transactionDateFormat.parse(str).getTime();
+                                    if(time <= standTamp) {
+                                        myref.child(data.getKey()).removeValue();
+                                        new LogEngine().sendLog("remove this");
+                                    }
+                                }catch(ParseException e){
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }catch(ParseException e){
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,13 +142,8 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                 View viewGroup = inflater.inflate(R.layout.transaction_add_dialog, (ViewGroup)findViewById(R.id.transaction_add_layout));
 
                 final EditText title = (EditText)viewGroup.findViewById(R.id.transaction_dialog_title);
-                final EditText time = (EditText)viewGroup.findViewById(R.id.transaction_dialog_timestamp);
                 final EditText value = (EditText)viewGroup.findViewById(R.id.transaction_dialog_value);
                 final RadioGroup radioGroup = (RadioGroup)viewGroup.findViewById(R.id.TransactionTypeRadioGroup);
-
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(System.currentTimeMillis());
-                time.setText(Global.transactionDateFormat.format(cal.getTime()));
 
                 builder.setTitle("갚을 돈/받을 돈 추가");
                 builder.setView(viewGroup);
@@ -126,8 +172,11 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                 builder.setPositiveButton("추가", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        if(title.getText().length()==0)return;
                         final int checkedButtonIndex = radioGroup.getCheckedRadioButtonId();
-                        MoneyTransaction transaction = new MoneyTransaction(title.getText().toString(), checkedButtonIndex == R.id.radio_payback?Global.getOwner():Global.getOpper(), value.getText().toString() ,time.getText().toString());
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTimeInMillis(System.currentTimeMillis());
+                        MoneyTransaction transaction = new MoneyTransaction(title.getText().toString(), checkedButtonIndex == R.id.radio_payback?Global.getOwner():Global.getOpper(), value.getText().toString() ,Global.transactionDateFormat.format(cal.getTime()).toString());
                         String key = FirebaseManageEngine.getFreshLocalDBref().child(Global.rootName+"/transactions").push().getKey();
 
                         Map<String, Object> postVal = transaction.toMap();
@@ -173,7 +222,6 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                 MoneyTransaction transaction = snapshot.getValue(MoneyTransaction.class);
                 Boolean bool = (Boolean)snapshot.child("type").getValue();
                 if(bool) {
-                    new LogEngine().sendLog("GENERAL ADDED");
                     transactions.add(new MoneyTransaction(
                             snapshot.child("name").getValue().toString(),
                             snapshot.child("owed").getValue().toString(),
@@ -183,11 +231,11 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                     );
                 }
                 else {
-                    new LogEngine().sendLog("SETTLE ADDED");
                     transactions.add(new MoneyTransaction(transaction.timestamp)
                     );
                 }
                 mAdapter.notifyDataSetChanged();
+                mLayoutManager.scrollToPosition(transactions.size()-1);
 
                 int profit = 0;
                 for(int i=0;i<transactions.size();i++){
@@ -225,6 +273,16 @@ public class MoneyTransactionActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                new LogEngine().sendLog("remove");
+                String stamp = dataSnapshot.getValue(MoneyTransaction.class).timestamp;
+                Iterator<MoneyTransaction> iter = transactions.iterator();
+                while(iter.hasNext()){
+                    MoneyTransaction trans = iter.next();
+                    if(trans.timestamp.equals(stamp))
+                        iter.remove();
+                }
+                mAdapter.notifyDataSetChanged();
+
             }
 
             @Override

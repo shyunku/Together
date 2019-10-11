@@ -349,18 +349,31 @@
 
     <ImageView
         android:id="@+id/imageButton"
+        android:layout_width="195dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/device_id"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view_our_location"
+        app:srcCompat="@drawable/resize"
+        tools:srcCompat="@drawable/resize" />
+
+    <ImageView
+        android:id="@+id/imageButton2"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/version"
+        app:layout_constraintBottom_toTopOf="@+id/device_id"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageButton"
         app:layout_constraintTop_toBottomOf="@+id/view_our_location"
-        app:srcCompat="@drawable/resize"
-        tools:srcCompat="@drawable/resize" />
+        app:srcCompat="@drawable/emote"
+        tools:srcCompat="@drawable/emote" />
 
     <TextView
         android:id="@+id/version"
@@ -373,6 +386,19 @@
         android:textColor="@color/pure_white"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/device_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/rixgom"
+        android:text="Device ID : 33"
+        android:textColor="@color/pure_white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/version"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

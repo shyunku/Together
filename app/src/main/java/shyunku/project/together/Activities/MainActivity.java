@@ -5,10 +5,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Global.setCurrentDeviceID(Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID));
+        Global.setCurrentDeviceID(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
         new LogEngine().sendLog("DEVICE_ID = "+Global.curDeviceID);
         Toast.makeText(getApplicationContext(), "ID = "+Global.curDeviceID, Toast.LENGTH_LONG);
         initialSetting();
@@ -120,9 +122,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void initialSetting(){
         final TextView statusTitle = findViewById(R.id.opp_status_title);
+        final TextView deviceIDt = findViewById(R.id.device_id);
         statusTitle.setText(Global.getOpper()+"의 프로필");
 
         final TextView Ver = findViewById(R.id.version);
+        deviceIDt.setText("Device ID : "+Global.curDeviceID);
         Ver.setText(Global.version +" -  "+Global.getOwner()+" 전용 APP - "+(Global.DEBUG_MODE?"Debug":"Release")+" mode");
         final Button updateHappinessBtn = findViewById(R.id.update_happiness_button);
         updateHappinessBtn.setOnClickListener(new View.OnClickListener() {
