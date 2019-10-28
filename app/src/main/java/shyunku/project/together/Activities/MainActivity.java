@@ -1,13 +1,20 @@
 package shyunku.project.together.Activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -25,6 +32,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,26 +41,43 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Engines.LogEngine;
-import shyunku.project.together.Fragments.GoogleMapFragment;
 import shyunku.project.together.Objects.User;
 import shyunku.project.together.R;
 import shyunku.project.together.Services.FirebaseInstanceService;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
     User me = new User(), opp = new User();
+    int CODE = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Global.setCurrentDeviceID(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+        TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+
+        int permssionCheck = ContextCompat.checkSelfPermission(this,Manifest.permission.READ_PHONE_STATE);
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)!=PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)){
+
+            }else{
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, CODE);
+            }
+        }
+        String id = sha256(tm.getLine1Number());
+        Global.setCurrentDeviceID(id);
+
         new LogEngine().sendLog("DEVICE_ID = "+Global.curDeviceID);
         Toast.makeText(getApplicationContext(), "ID = "+Global.curDeviceID, Toast.LENGTH_LONG);
         initialSetting();
@@ -63,10 +88,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    me = snapshot.getValue(User.class);
                     registerFCMKey();
                     String gainedName = snapshot.child("name").getValue().toString();
                     if(gainedName.equals(Global.getOwner())){
+                        me = snapshot.getValue(User.class);
                         final TextView statusView = findViewById(R.id.my_status);
                         final TextView statusDescription = findViewById(R.id.my_status_message);
                         final TextView happinessView = findViewById(R.id.my_happiness);
@@ -94,9 +119,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    opp = snapshot.getValue(User.class);
                     String gainedName = snapshot.child("name").getValue().toString();
                     if(gainedName.equals(Global.getOpper())){
+                        opp = snapshot.getValue(User.class);
                         final TextView statusView = findViewById(R.id.opp_status);
                         final TextView statusDescription = findViewById(R.id.opp_status_message);
                         final TextView happinessView = findViewById(R.id.opp_happiness);
@@ -127,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
         final TextView Ver = findViewById(R.id.version);
         deviceIDt.setText("Device ID : "+Global.curDeviceID);
-        Ver.setText(Global.version +" |  "+Global.getOwner()+" 전용, "+(Global.DEBUG_MODE?"Debug":"Release"));
+        Ver.setText(Global.version +" |  "+Global.getOwner()+" 전용");
         final Button updateHappinessBtn = findViewById(R.id.update_happiness_button);
         updateHappinessBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -331,5 +356,23 @@ public class MainActivity extends AppCompatActivity {
                         // Log and toast
                     }
                 });
+    }
+
+    public String sha256(String str){
+        String SHA = "";
+        try{
+            MessageDigest sh = MessageDigest.getInstance("SHA-256");
+            sh.update(str.getBytes());
+            byte byteData[] = sh.digest();
+            StringBuffer sb = new StringBuffer();
+            for(int i = 0 ; i < byteData.length ; i++){
+                sb.append(Integer.toString((byteData[i]&0xff) + 0x100, 16).substring(1));
+            }
+            SHA = sb.toString();
+        }catch(NoSuchAlgorithmException e){
+            e.printStackTrace();
+            SHA = null;
+        }
+        return SHA.substring(50);
     }
 }

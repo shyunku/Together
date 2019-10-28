@@ -7,13 +7,11 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import shyunku.project.together.Activities.MainActivity;
 import shyunku.project.together.Engines.LogEngine;
 
 
 public class Global {
-    public static final boolean DEBUG_MODE = false;
-    public static String version = "v0.10.2-3.05w";
+    public static String version = "v0.12.1.339";
     public static String curDeviceID = "";
     public static String oppFCMkey = "";
 
@@ -23,9 +21,11 @@ public class Global {
     }
 
     private static int getCurrentUserIndex(){
-        if(DEBUG_MODE)
-            return curDeviceID.equals(DEBUG_DEVICE_ID[1])?1:0;
-        return curDeviceID.equals(DEVICE_ID[1])?1:0;
+        for(int i=0;i<AUTHORIZED_CANDIDATES.length;i++){
+            if(AUTHORIZED_CANDIDATES[i].equals(curDeviceID))
+                return 1;
+        }
+        return 0;
     }
 
 
@@ -50,17 +50,11 @@ public class Global {
     public static final SimpleDateFormat transactionDateFormat = new SimpleDateFormat("yyMMddHHmmss");
     public static final SimpleDateFormat transactionReleaseDateFormat = new SimpleDateFormat("yy.MM.dd a h:mm:ss", Locale.KOREA);
     public static final String FMC_SERVER_KEY = "AAAARb8XDHU:APA91bFj6ysDKxywfmeQDRL4kMPAZj2jgWAGlKtjL7cpXkRhpiyjaWPo2ENO_8sdK8KajOFCoYFh7quvmu2q6KF9BqN4Irf_j1ihEPts51cGOzFVf0kJfkf0FtVOjPcQ6XYjIbLz9PQS";
-    public static final String[] DEBUG_DEVICE_ID={
-            "a045f52f82e2166e",
-            "16750eade6d42084"
-    };
-    public static final String[] DEVICE_ID={
-            "-",
-            "844e11dd79045736"
-    };
 
-    //재훈 a045f52f82e2166e 디바이스
-    //영훈 2960fb27b944c8cc 디바이스
+    public static final String[] AUTHORIZED_CANDIDATES={
+           "ea7b5358340c47",
+            "24da23bb985ce7"
+    };
 
     public static void makeToast(Context context, String alert){
         Toast.makeText(context.getApplicationContext(), alert, Toast.LENGTH_SHORT).show();

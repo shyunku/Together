@@ -1,13 +1,13 @@
 package shyunku.project.together.Objects;
 
 import android.content.Context;
+import android.util.Pair;
 
 import com.google.firebase.database.Exclude;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import shyunku.project.together.Activities.MainActivity;
 import shyunku.project.together.R;
 
 public class User {
@@ -15,9 +15,11 @@ public class User {
     public String status = "";
     public int happiness = 0;
     public String FCMtoken = "EMPTY";
+    //public UserLocation location = new UserLocation(37.56, 126.97);
+    public double latitude = 5;
+    public double longitude = 4;
 
     public User(){
-
     }
 
     public String getStatusDescription(Context context){
@@ -63,6 +65,8 @@ public class User {
         result.put("name", this.name);
         result.put("status", this.status);
         result.put("token", this.FCMtoken);
+        result.put("latitude", this.latitude);
+        result.put("longitude", this.longitude);
 
         return result;
     }

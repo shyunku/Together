@@ -18,7 +18,7 @@
         android:paddingTop="6dp"
         android:paddingRight="10dp"
         android:paddingBottom="6dp"
-        android:text="이것은 내용입니다 example의 예시입니다"
+        android:text="sample text sentence sample text sentence "
         android:textColor="@color/PureDark"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
