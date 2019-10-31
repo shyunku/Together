@@ -18,6 +18,7 @@ public class User {
     //public UserLocation location = new UserLocation(37.56, 126.97);
     public double latitude = 5;
     public double longitude = 4;
+    public boolean allowLocShare = true;
 
     public User(){
     }
@@ -67,6 +68,7 @@ public class User {
         result.put("token", this.FCMtoken);
         result.put("latitude", this.latitude);
         result.put("longitude", this.longitude);
+        result.put("location_share", this.allowLocShare);
 
         return result;
     }

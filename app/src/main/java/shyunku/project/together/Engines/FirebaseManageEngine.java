@@ -1,7 +1,9 @@
 package shyunku.project.together.Engines;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -121,6 +123,41 @@ public class FirebaseManageEngine {
         }).start();
     }
 
+    public static void sendLocationRequestMessage() {
+        new LogEngine().sendLog("OPP_FCM_KEY = "+Global.getOppKey());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // FMC 메시지 생성 start
+                    JSONObject root = new JSONObject();
+                    JSONObject notification = new JSONObject();
+                    notification.put("body", "request_location");
+                    notification.put("tag", "location");
+                    root.put("data", notification);
+                    root.put("to", Global.getOppKey());
+
+                    // FMC 메시지 생성 end
+
+                    URL Url = new URL("https://fcm.googleapis.com/fcm/send");
+                    HttpURLConnection conn = (HttpURLConnection) Url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setDoOutput(true);
+                    conn.setDoInput(true);
+                    conn.addRequestProperty("Authorization", "key=" + Global.FMC_SERVER_KEY);
+                    conn.setRequestProperty("Accept", "application/json");
+                    conn.setRequestProperty("Content-type", "application/json");
+                    OutputStream os = conn.getOutputStream();
+                    os.write(root.toString().getBytes("utf-8"));
+                    os.flush();
+                    conn.getResponseCode();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     public static void sendNotificationResponseMessage(final boolean response) {
         new LogEngine().sendLog("OPP_FCM_KEY = "+Global.getOppKey());
         new Thread(new Runnable() {
@@ -158,7 +195,10 @@ public class FirebaseManageEngine {
     }
 
     public static void noticeWhoIam(Context context){
-        Global.setCurrentDeviceID(Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID));
+        TelephonyManager tm = (TelephonyManager)context.getSystemService(context.TELEPHONY_SERVICE);
+        @SuppressLint("MissingPermission")
+        String id = Global.sha256(tm.getLine1Number());
+        Global.setCurrentDeviceID(id);
         Global.introduceMyself();
     }
 

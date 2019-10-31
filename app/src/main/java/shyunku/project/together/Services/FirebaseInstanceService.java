@@ -1,7 +1,7 @@
 package shyunku.project.together.Services;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
-import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,14 +9,12 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.util.Log;
+import android.location.Location;
+import android.location.LocationManager;
 
 import androidx.core.app.NotificationCompat;
 
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -44,6 +42,9 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
             sendRequestNotification(remoteMessage.getData().get("title"), remoteMessage.getData().get("body"));
         }else if(MessageTag.equals("response")){
             sendResponseNotification(remoteMessage.getData().get("title"), remoteMessage.getData().get("body"));
+        }else if(MessageTag.equals("location")){
+            //위치 정보
+            updateLocationInProcess();
         }
     }
 
@@ -126,6 +127,25 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
                 .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
 
         notificationManager.notify(Global.NOTIFICATON_RESPONSE_ID, notificationBuilder.build());
+    }
+
+    private void updateLocationInProcess(){
+        //상대가 권한을 얻었다고 가정
+        new LogEngine().sendLog(isForeground()+"");
+        if(isForeground())return;
+
+        String locationProvider = LocationManager.GPS_PROVIDER;
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        @SuppressLint("MissingPermission") Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+        if (lastKnownLocation != null) {
+            double lng = lastKnownLocation.getLongitude();
+            double lat = lastKnownLocation.getLatitude();
+            //new LogEngine().sendLog(Global.getOwner()+"long : "+lng+", lat : "+lat);
+
+            DatabaseReference locref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users/"+Global.getOwner());
+            locref.child("longitude").setValue(lng);
+            locref.child("latitude").setValue(lat);
+        }
     }
 
     public boolean isForeground(){

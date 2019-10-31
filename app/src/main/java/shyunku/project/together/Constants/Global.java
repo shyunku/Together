@@ -4,6 +4,8 @@ import android.content.Context;
 import android.provider.Settings;
 import android.widget.Toast;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -11,7 +13,7 @@ import shyunku.project.together.Engines.LogEngine;
 
 
 public class Global {
-    public static String version = "v0.12.1.339";
+    public static String version = "v0.13.1.356";
     public static String curDeviceID = "";
     public static String oppFCMkey = "";
 
@@ -52,7 +54,6 @@ public class Global {
     public static final String FMC_SERVER_KEY = "AAAARb8XDHU:APA91bFj6ysDKxywfmeQDRL4kMPAZj2jgWAGlKtjL7cpXkRhpiyjaWPo2ENO_8sdK8KajOFCoYFh7quvmu2q6KF9BqN4Irf_j1ihEPts51cGOzFVf0kJfkf0FtVOjPcQ6XYjIbLz9PQS";
 
     public static final String[] AUTHORIZED_CANDIDATES={
-           "ea7b5358340c47",
             "24da23bb985ce7"
     };
 
@@ -72,4 +73,22 @@ public class Global {
     public static final int NOTIFICATION_REQUEST_ID = 4016;
     public static final int NOTIFICATON_RESPONSE_ID = 4017;
     public static final String NOTIFICATION_CHAT_CHANNEL_ID = "TOGETHER_TALK";
+
+    public static String sha256(String str){
+        String SHA = "";
+        try{
+            MessageDigest sh = MessageDigest.getInstance("SHA-256");
+            sh.update(str.getBytes());
+            byte byteData[] = sh.digest();
+            StringBuffer sb = new StringBuffer();
+            for(int i = 0 ; i < byteData.length ; i++){
+                sb.append(Integer.toString((byteData[i]&0xff) + 0x100, 16).substring(1));
+            }
+            SHA = sb.toString();
+        }catch(NoSuchAlgorithmException e){
+            e.printStackTrace();
+            SHA = null;
+        }
+        return SHA.substring(50);
+    }
 }

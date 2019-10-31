@@ -62,18 +62,15 @@ import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Engines.LocationUpdateNotificationManager;
 import shyunku.project.together.Objects.User;
 import shyunku.project.together.R;
-import shyunku.project.together.Services.LocationUpdateService;
 
 public class LocationActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback{
     private GoogleMap gmap = null;
-    private Marker currentMarker = null;
-
-    private Intent serviceIntent;
+    private Marker currentMarker = null, oppMarker = null;
 
     private static final String TAG = "google_map";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
-    private static final int UPDATE_INTERVAL_MS = 10000;                     //업데이트 주기 = 10초
-    private static final int FASTEST_UPDATE_INTERVAL_MS = 5000;      // 최소 업데이트 주기 = 5초
+    private static final int UPDATE_INTERVAL_MS = 30000;                     //업데이트 주기 = 30초
+    private static final int FASTEST_UPDATE_INTERVAL_MS = 30000;      // 최소 업데이트 주기 = 30초
 
     private static final int PERMISSONS_REQUEST_CODE = 100;
     boolean needRequest = false;
@@ -93,8 +90,8 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     User me = new User(), opp = new User();
 
     TextView myCurLocView, oppCurLocView, distView;
-    Button showMe, showOpp;
-    Switch autoUpdate;
+    Button updateOpp, showOpp;
+    Switch allowUpdate;
 
     public static LocationUpdateNotificationManager man;
 
@@ -107,9 +104,9 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         myCurLocView = (TextView) findViewById(R.id.my_location_view);
         oppCurLocView = (TextView) findViewById(R.id.opp_location_view);
         distView = (TextView)findViewById(R.id.distance_between);
-        showMe = (Button)findViewById(R.id.show_my_pos);
+        updateOpp = (Button)findViewById(R.id.show_my_pos);
         showOpp = (Button)findViewById(R.id.show_opp_pos);
-        autoUpdate = (Switch)findViewById(R.id.auto_location_update);
+        allowUpdate = (Switch)findViewById(R.id.auto_location_update);
 
         //my info
         DatabaseReference myref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
@@ -122,6 +119,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
                         me = snapshot.getValue(User.class);
                         myCurLocView.setText("내 위치 : "+toAddressString(me.latitude, me.longitude));
                         distView.setText("사이 거리 : "+getDistance(me, opp));
+                        allowUpdate.setChecked(me.allowLocShare);
                     }
                 }
             }
@@ -167,11 +165,10 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.google_map_fragment);
         mapFragment.getMapAsync(this);
 
-        showMe.setOnClickListener(new View.OnClickListener() {
+        updateOpp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(new LatLng(me.latitude, me.longitude));
-                gmap.moveCamera(cameraUpdate);
+                FirebaseManageEngine.sendLocationRequestMessage();
             }
         });
 
@@ -183,17 +180,16 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
 
-        autoUpdate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        allowUpdate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton view, boolean b) {
-//                if(b){
-//                    man = new LocationUpdateNotificationManager(LocationActivity.this);
-//                    Intent services = new Intent(getApplicationContext(), LocationUpdateService.class);
-//                    startService(services);
-//                }else{
-//                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//                    manager.cancel(LocationUpdateService.NOTIFICATION_ID);
-//                }
+                me.allowLocShare = b;
+
+                Map<String, Object> postVal = me.toMap();
+                Map<String, Object> childUpdates = new HashMap<>();
+                childUpdates.put(Global.rootName+"/users/"+Global.getOwner(), postVal);
+
+                FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
             }
         });
     }
@@ -297,7 +293,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     public String getCurrentAddress(LatLng latlng) {
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        Geocoder geocoder = new Geocoder(this, Locale.KOREA);
         List<Address> addresses;
 
         try {
@@ -327,6 +323,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
 
     public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
         if(currentMarker != null)currentMarker.remove();
+        if(oppMarker != null)oppMarker.remove();
         LatLng myCurrentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         LatLng oppCurrentLatLng = new LatLng(opp.latitude, opp.longitude);
 
@@ -346,12 +343,13 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
             isAutoFocus = false;
         }
 
+
         markerOptions.position(oppCurrentLatLng);
         markerOptions.title(toAddressString(oppCurrentLatLng.latitude, oppCurrentLatLng.longitude));
         markerOptions.snippet(toAddressSnippet(oppCurrentLatLng.latitude, oppCurrentLatLng.longitude));
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
 
-        gmap.addMarker(markerOptions);
+        oppMarker = gmap.addMarker(markerOptions);
     }
 
     private void setDefaultLocation() {
@@ -476,6 +474,10 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         l2.setLongitude(u2.longitude);
         float dist = l1.distanceTo(l2);
 
-        return "약 "+dist+" km";
+        return "약 "+dist+" m";
+    }
+
+    private void updateOpp(){
+
     }
 }

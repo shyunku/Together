@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
 
         TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
 
-        int permssionCheck = ContextCompat.checkSelfPermission(this,Manifest.permission.READ_PHONE_STATE);
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)!=PackageManager.PERMISSION_GRANTED){
             if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)){
 
@@ -75,11 +74,10 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, CODE);
             }
         }
-        String id = sha256(tm.getLine1Number());
+        String id = Global.sha256(tm.getLine1Number());
         Global.setCurrentDeviceID(id);
 
         new LogEngine().sendLog("DEVICE_ID = "+Global.curDeviceID);
-        Toast.makeText(getApplicationContext(), "ID = "+Global.curDeviceID, Toast.LENGTH_LONG);
         initialSetting();
 
         //my info
@@ -133,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                         oppStatusBG.setBackgroundResource(opp.getStatusBackgroundColorTag(MainActivity.this));
 
                         Global.setOppFCMkey(snapshot.child("token").getValue().toString());
+                        //new LogEngine().sendLog("opp FCM_KEY = "+Global.oppFCMkey);
                         return;
                     }
                 }
@@ -345,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // Get new Instance ID token
                         String token = task.getResult().getToken();
-                        //new LogEngine().sendLog("token = "+token);
+                        //new LogEngine().sendLog("FCM_KEY = "+me.FCMtoken);
 
                         me.FCMtoken = token;
                         Map<String, Object> postVal = me.toMap();
@@ -356,23 +355,5 @@ public class MainActivity extends AppCompatActivity {
                         // Log and toast
                     }
                 });
-    }
-
-    public String sha256(String str){
-        String SHA = "";
-        try{
-            MessageDigest sh = MessageDigest.getInstance("SHA-256");
-            sh.update(str.getBytes());
-            byte byteData[] = sh.digest();
-            StringBuffer sb = new StringBuffer();
-            for(int i = 0 ; i < byteData.length ; i++){
-                sb.append(Integer.toString((byteData[i]&0xff) + 0x100, 16).substring(1));
-            }
-            SHA = sb.toString();
-        }catch(NoSuchAlgorithmException e){
-            e.printStackTrace();
-            SHA = null;
-        }
-        return SHA.substring(50);
     }
 }

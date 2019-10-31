@@ -14,6 +14,7 @@
         android:layout_marginTop="8dp"
         android:fontFamily="@font/rixgom"
         android:text="내 위치 : "
+        android:textSize="10sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,6 +26,7 @@
         android:layout_marginTop="8dp"
         android:fontFamily="@font/rixgom"
         android:text="상대 위치 : "
+        android:textSize="10sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/my_location_view" />
 
@@ -71,7 +73,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/rixgom"
-        android:text="내 위치 보기"
+        android:text="상대 위치 업데이트"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/show_opp_pos"
         app:layout_constraintHorizontal_bias="0.5"
@@ -96,8 +98,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="4dp"
+        android:checked="true"
         android:fontFamily="@font/rixgom"
-        android:text="내 위치 자동 업데이트"
+        android:text="내 위치 공개"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/opp_location_view" />
