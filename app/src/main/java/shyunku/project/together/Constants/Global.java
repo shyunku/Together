@@ -13,7 +13,7 @@ import shyunku.project.together.Engines.LogEngine;
 
 
 public class Global {
-    public static String version = "v0.13.1.356";
+    public static String version = "v0.13.2.356";
     public static String curDeviceID = "";
     public static String oppFCMkey = "";
 

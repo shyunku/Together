@@ -12,9 +12,13 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -131,8 +135,22 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
 
     private void updateLocationInProcess(){
         //상대가 권한을 얻었다고 가정
-        new LogEngine().sendLog(isForeground()+"");
         if(isForeground())return;
+
+        DatabaseReference locref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users/"+Global.getOwner());
+        DatabaseReference refs = locref.child("location_share");
+        refs.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean isShareAllowed = dataSnapshot.getValue(Boolean.class);
+                new LogEngine().sendLog(isShareAllowed+"");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         String locationProvider = LocationManager.GPS_PROVIDER;
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -142,7 +160,6 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
             double lat = lastKnownLocation.getLatitude();
             //new LogEngine().sendLog(Global.getOwner()+"long : "+lng+", lat : "+lat);
 
-            DatabaseReference locref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users/"+Global.getOwner());
             locref.child("longitude").setValue(lng);
             locref.child("latitude").setValue(lat);
         }

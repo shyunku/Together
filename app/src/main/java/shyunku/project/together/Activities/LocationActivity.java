@@ -108,6 +108,19 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         showOpp = (Button)findViewById(R.id.show_opp_pos);
         allowUpdate = (Switch)findViewById(R.id.auto_location_update);
 
+        DatabaseReference mr = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users/"+Global.getOwner()).child("location_share");
+        mr.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Boolean allowed = dataSnapshot.getValue(Boolean.class);
+                allowUpdate.setChecked(allowed);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         //my info
         DatabaseReference myref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
         myref.addValueEventListener(new ValueEventListener() {
