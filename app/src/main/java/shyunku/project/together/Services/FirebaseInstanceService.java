@@ -7,6 +7,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -34,11 +35,12 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
+        // Background Process
         FirebaseManageEngine.noticeWhoIam(this);
         FirebaseManageEngine.getOppKeyFromFirebaseServer();
 
         String MessageTag = remoteMessage.getData().get("tag");
-        new LogEngine().sendLog("Message Received, content = "+remoteMessage.getData().get("body"));
+        new LogEngine().sendLog(MessageTag + ") Message Received, content = "+remoteMessage.getData().get("body"));
         if(MessageTag.equals("chat")) {
             if (isForeground()) return;
             sendChatNotification(remoteMessage.getData().get("title"), remoteMessage.getData().get("body"));
@@ -99,8 +101,8 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
         Intent actionIntent_no = new Intent(this, ActionService.class);
         actionIntent_yes.setAction(ActionService.RESPONSE_YES_ACTION_FLAG);
         actionIntent_no.setAction(ActionService.RESPONSE_NO_ACTION_FLAG);
-        PendingIntent piAction1 = PendingIntent.getService(this, 0, actionIntent_yes, PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent piAction2 = PendingIntent.getService(this, 0, actionIntent_no, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piAction1 = PendingIntent.getService(this, Global.NOTIFICATION_REQUEST_ID, actionIntent_yes, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piAction2 = PendingIntent.getService(this, Global.NOTIFICATION_REQUEST_ID, actionIntent_no, PendingIntent.FLAG_UPDATE_CURRENT);
 
         notificationBuilder
                 .setSmallIcon(R.mipmap.main_icon_real)

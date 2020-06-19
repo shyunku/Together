@@ -52,6 +52,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -60,6 +61,7 @@ import java.util.Map;
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Engines.LocationUpdateNotificationManager;
+import shyunku.project.together.Engines.LogEngine;
 import shyunku.project.together.Objects.User;
 import shyunku.project.together.R;
 
@@ -69,8 +71,8 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
 
     private static final String TAG = "google_map";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
-    private static final int UPDATE_INTERVAL_MS = 30000;                     //업데이트 주기 = 30초
-    private static final int FASTEST_UPDATE_INTERVAL_MS = 30000;      // 최소 업데이트 주기 = 30초
+    private static final int UPDATE_INTERVAL_MS = 30000;                //업데이트 주기 = 30초
+    private static final int FASTEST_UPDATE_INTERVAL_MS = 12000;        // 최소 업데이트 주기 = 12초
 
     private static final int PERMISSONS_REQUEST_CODE = 100;
     boolean needRequest = false;
@@ -108,7 +110,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         showOpp = (Button)findViewById(R.id.show_opp_pos);
         allowUpdate = (Switch)findViewById(R.id.auto_location_update);
 
-        DatabaseReference mr = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users/"+Global.getOwner()).child("location_share");
+        DatabaseReference mr = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users/"+Global.curDeviceID).child("location_share");
         mr.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -122,18 +124,19 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         });
 
         //my info
-        DatabaseReference myref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
-        myref.addValueEventListener(new ValueEventListener() {
+        final DatabaseReference uref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
+
+        // Listen My Info
+        uref.child(Global.curDeviceID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    String gainedName = snapshot.child("name").getValue().toString();
-                    if(gainedName.equals(Global.getOwner())){
-                        me = snapshot.getValue(User.class);
-                        myCurLocView.setText("내 위치 : "+toAddressString(me.latitude, me.longitude));
-                        distView.setText("사이 거리 : "+getDistance(me, opp));
-                        allowUpdate.setChecked(me.allowLocShare);
-                    }
+                if(dataSnapshot.exists()){
+                    // Already Exists
+                    me = dataSnapshot.getValue(User.class);
+
+                    myCurLocView.setText("내 위치 : "+toAddressString(me.latitude, me.longitude));
+                    distView.setText("사이 거리 : "+getDistance(me, opp));
+                    allowUpdate.setChecked(me.allowLocShare);
                 }
             }
 
@@ -144,14 +147,19 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         });
 
         //opp info
-        DatabaseReference oppref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
-        oppref.addValueEventListener(new ValueEventListener() {
+        uref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<String> users = new ArrayList<>();
+
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    String gainedName = snapshot.child("name").getValue().toString();
-                    if(gainedName.equals(Global.getOpper())){
+                    String iteratingDeviceID = (String) snapshot.child("deviceID").getValue();
+                    String username = (String) snapshot.child("name").getValue();
+                    users.add(username);
+
+                    if(!iteratingDeviceID.equals(Global.curDeviceID)){
                         opp = snapshot.getValue(User.class);
+
                         oppCurLocView.setText("상대 위치 : "+toAddressString(opp.latitude, opp.longitude));
                         distView.setText("서로 간의 거리 : "+getDistance(me, opp));
                     }
@@ -200,7 +208,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
 
                 Map<String, Object> postVal = me.toMap();
                 Map<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put(Global.rootName+"/users/"+Global.getOwner(), postVal);
+                childUpdates.put(Global.rootName+"/users/"+Global.curDeviceID, postVal);
 
                 FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
             }
@@ -251,6 +259,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
                 location = locationList.get(locationList.size() - 1);
                 currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
 
+                new LogEngine().sendLog(location.getLatitude()+", "+location.getLongitude());
                 String markerTitle = getCurrentAddress(currentPosition);
                 String markerSnippet = "위도 : " + String.valueOf(location.getLatitude()) + ", 경도 : "+String.valueOf(location.getLongitude());
 
@@ -306,11 +315,12 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     public String getCurrentAddress(LatLng latlng) {
-        Geocoder geocoder = new Geocoder(this, Locale.KOREA);
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         List<Address> addresses;
 
         try {
-            addresses = geocoder.getFromLocation(latlng.latitude, latlng.longitude, 1);
+            addresses = geocoder.getFromLocation(latlng.latitude, latlng.longitude, 5);
+            new LogEngine().sendLog("Address size "+addresses.size());
         } catch (IOException e) {
             //네트워크 문제
             Toast.makeText(this, "GeoCoder service unable", Toast.LENGTH_LONG).show();
@@ -321,7 +331,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         }
 
         if(addresses == null || addresses.size() == 0){
-            Toast.makeText(this, "Address Not Found", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Address Not Found", Toast.LENGTH_SHORT).show();
             return "Address Not Found";
         }else{
             Address address = addresses.get(0);
@@ -464,13 +474,14 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
 
         Map<String, Object> postVal = me.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(Global.rootName+"/users/"+Global.getOwner(), postVal);
+        childUpdates.put(Global.rootName+"/users/"+Global.curDeviceID, postVal);
 
         FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
     }
 
     private String toAddressString(double latitude, double longitude){
         new LatLng(latitude,longitude);
+        new LogEngine().sendLog(latitude+", "+longitude);
         return getCurrentAddress(new LatLng(latitude, longitude));
     }
 
