@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 import shyunku.project.together.Constants.Global;
+import shyunku.project.together.CustomViews.SquareProgressBarView;
 import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Engines.Lgm;
 import shyunku.project.together.Objects.User;
@@ -150,13 +151,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initialSetting(){
-        final Button updateHappinessBtn = findViewById(R.id.update_happiness_button);
         final Button goTogetherTalkButton = findViewById(R.id.go_together_talk);
         final Button requestButton = findViewById(R.id.request_button);
+        final SquareProgressBarView myHappinessProgressBar = findViewById(R.id.my_happiness_bar);
         final TextView partyCodeView = findViewById(R.id.party_code);
         final DatabaseReference myRef = FirebaseManageEngine.getPartyRef(meDump.subordinatedParty).child("users").child(Global.curDeviceID);
 
-        updateHappinessBtn.setOnClickListener(new View.OnClickListener() {
+        myHappinessProgressBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
