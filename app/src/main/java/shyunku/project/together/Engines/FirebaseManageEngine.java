@@ -73,7 +73,7 @@ public class FirebaseManageEngine {
                     conn.setRequestMethod("POST");
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
-                    conn.addRequestProperty("Authorization", "key=" + Global.FMC_SERVER_KEY);
+                    conn.addRequestProperty("Authorization", "key=" + Global.FCM_SERVER_KEY);
                     conn.setRequestProperty("Accept", "application/json");
                     conn.setRequestProperty("Content-type", "application/json");
                     OutputStream os = conn.getOutputStream();
@@ -109,7 +109,7 @@ public class FirebaseManageEngine {
                     conn.setRequestMethod("POST");
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
-                    conn.addRequestProperty("Authorization", "key=" + Global.FMC_SERVER_KEY);
+                    conn.addRequestProperty("Authorization", "key=" + Global.FCM_SERVER_KEY);
                     conn.setRequestProperty("Accept", "application/json");
                     conn.setRequestProperty("Content-type", "application/json");
                     OutputStream os = conn.getOutputStream();
@@ -144,7 +144,7 @@ public class FirebaseManageEngine {
                     conn.setRequestMethod("POST");
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
-                    conn.addRequestProperty("Authorization", "key=" + Global.FMC_SERVER_KEY);
+                    conn.addRequestProperty("Authorization", "key=" + Global.FCM_SERVER_KEY);
                     conn.setRequestProperty("Accept", "application/json");
                     conn.setRequestProperty("Content-type", "application/json");
                     OutputStream os = conn.getOutputStream();
@@ -180,7 +180,7 @@ public class FirebaseManageEngine {
                     conn.setRequestMethod("POST");
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
-                    conn.addRequestProperty("Authorization", "key=" + Global.FMC_SERVER_KEY);
+                    conn.addRequestProperty("Authorization", "key=" + Global.FCM_SERVER_KEY);
                     conn.setRequestProperty("Accept", "application/json");
                     conn.setRequestProperty("Content-type", "application/json");
                     OutputStream os = conn.getOutputStream();

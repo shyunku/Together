@@ -141,9 +141,9 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MoneyTransactionActivity.this);
                 View viewGroup = inflater.inflate(R.layout.transaction_add_dialog, (ViewGroup)findViewById(R.id.transaction_add_layout));
 
-                final EditText title = (EditText)viewGroup.findViewById(R.id.transaction_dialog_title);
-                final EditText value = (EditText)viewGroup.findViewById(R.id.transaction_dialog_value);
-                final RadioGroup radioGroup = (RadioGroup)viewGroup.findViewById(R.id.TransactionTypeRadioGroup);
+                final EditText title = viewGroup.findViewById(R.id.transaction_dialog_title);
+                final EditText value = viewGroup.findViewById(R.id.transaction_dialog_value);
+                final RadioGroup radioGroup = viewGroup.findViewById(R.id.TransactionTypeRadioGroup);
 
                 builder.setTitle("갚을 돈/받을 돈 추가");
                 builder.setView(viewGroup);

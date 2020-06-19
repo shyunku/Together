@@ -1,6 +1,7 @@
 package shyunku.project.together.Activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,14 +10,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,28 +30,25 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.google.firebase.messaging.RemoteMessage;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Engines.LogEngine;
 import shyunku.project.together.Objects.User;
 import shyunku.project.together.R;
-import shyunku.project.together.Services.FirebaseInstanceService;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
@@ -80,28 +75,35 @@ public class MainActivity extends AppCompatActivity {
         new LogEngine().sendLog("DEVICE_ID = "+Global.curDeviceID);
         initialSetting();
 
-        //my info
-        DatabaseReference myref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
-        myref.addValueEventListener(new ValueEventListener() {
+        // FCM KEY SETTING
+        //registerFCMKey();
+
+        listenToUserInfo();
+    }
+
+    private void listenToUserInfo(){
+        final DatabaseReference ref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
+
+        // Listen My Info
+        ref.child(Global.curDeviceID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    registerFCMKey();
-                    String gainedName = snapshot.child("name").getValue().toString();
-                    if(gainedName.equals(Global.getOwner())){
-                        me = snapshot.getValue(User.class);
-                        final TextView statusView = findViewById(R.id.my_status);
-                        final TextView statusDescription = findViewById(R.id.my_status_message);
-                        final TextView happinessView = findViewById(R.id.my_happiness);
+                if(dataSnapshot.exists()){
+                    // Already Exists
+                    me = dataSnapshot.getValue(User.class);
 
-                        final ConstraintLayout myStatusBG = findViewById(R.id.my_status_color);
+                    Global.OwnerName = me.name;
 
-                        statusView.setText(me.status);
-                        statusDescription.setText(me.getStatusDescription(MainActivity.this));
-                        happinessView.setText(me.happiness+"/100");
-                        myStatusBG.setBackgroundResource(me.getStatusBackgroundColorTag(MainActivity.this));
-                        return;
-                    }
+                    final TextView statusView = findViewById(R.id.my_status);
+                    final TextView statusDescription = findViewById(R.id.my_status_message);
+                    final TextView happinessView = findViewById(R.id.my_happiness);
+
+                    final ConstraintLayout myStatusBG = findViewById(R.id.my_status_color);
+
+                    statusView.setText(me.status);
+                    statusDescription.setText(me.getStatusDescription(MainActivity.this));
+                    happinessView.setText(me.happiness+"/100");
+                    myStatusBG.setBackgroundResource(me.getStatusBackgroundColorTag(MainActivity.this));
                 }
             }
 
@@ -111,15 +113,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //opp info
-        DatabaseReference oppref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
-        oppref.addValueEventListener(new ValueEventListener() {
+        // Listen Opp Info and create me if I doesn't exist
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<String> users = new ArrayList<>();
+                boolean foundMe = false;
+
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    String gainedName = snapshot.child("name").getValue().toString();
-                    if(gainedName.equals(Global.getOpper())){
+                    String iteratingDeviceID = (String) snapshot.child("deviceID").getValue();
+                    String username = (String) snapshot.child("name").getValue();
+                    users.add(username);
+
+                    if(iteratingDeviceID.equals(Global.curDeviceID)){
+                        foundMe = true;
+                    }else{
                         opp = snapshot.getValue(User.class);
+
+                        Global.OpperName = opp.name;
+
                         final TextView statusView = findViewById(R.id.opp_status);
                         final TextView statusDescription = findViewById(R.id.opp_status_message);
                         final TextView happinessView = findViewById(R.id.opp_happiness);
@@ -130,10 +142,14 @@ public class MainActivity extends AppCompatActivity {
                         happinessView.setText(opp.happiness+"/100");
                         oppStatusBG.setBackgroundResource(opp.getStatusBackgroundColorTag(MainActivity.this));
 
-                        Global.setOppFCMkey(snapshot.child("token").getValue().toString());
+                        Global.setOppFCMkey((String) snapshot.child("token").getValue());
                         //new LogEngine().sendLog("opp FCM_KEY = "+Global.oppFCMkey);
-                        return;
                     }
+                }
+
+                // Check existance of my device
+                if(!foundMe){
+                    registerDevice(users);
                 }
             }
 
@@ -144,7 +160,100 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void initialSetting(){
+    private void registerDevice(final List<String> usernameList){
+        final DatabaseReference ref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
+
+        // There is no me. - create one
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        View viewGroup = inflater.inflate(R.layout.register_new_user_dialog, (ViewGroup) findViewById(R.id.register_new_user_layout));
+
+        final EditText username = viewGroup.findViewById(R.id.input_new_username);
+
+        Toast.makeText(MainActivity.this,"등록되지 않은 기기입니다. 등록이 필요합니다.", Toast.LENGTH_SHORT).show();
+
+        builder.setTitle("새로운 유저로 등록");
+        builder.setView(viewGroup);
+
+        builder.setNegativeButton("취소", null);
+        builder.setPositiveButton("등록", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                final String newUsername = username.getText().toString();
+                boolean isShouldBeDeleted = false;
+                if(newUsername.length() < 2){
+                    Toast.makeText(MainActivity.this, "이름은 2자 이상 입력해주세요.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if(usernameList.size() == 2){
+                    ref.child(usernameList.get(0)).removeValue();
+                    isShouldBeDeleted = true;
+                }
+
+
+                me = new User(newUsername, Global.curDeviceID);
+                Map<String, Object> postVal = me.toMap();
+                Map<String, Object> childUpdates = new HashMap<>();
+                childUpdates.put(Global.rootName + "/users/" + Global.curDeviceID, postVal);
+
+                registerFCMKey();
+            }
+        });
+
+        final AlertDialog dialog = builder.create();
+        dialog.setCancelable(false);                // Prevent Back key
+        dialog.setCanceledOnTouchOutside(false);    // Prevent outter touch to cancel
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dia) {
+                Button negativeBtn = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                negativeBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final AlertDialog.Builder warningBuilder = new AlertDialog.Builder(MainActivity.this);
+
+                        warningBuilder
+                                .setTitle("기기 미등록 경고")
+                                .setMessage("해당 기기는 미등록 상태입니다. 등록하지 않으면 앱을 사용할 수 없습니다.")
+                                .setNegativeButton("돌아가기", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // resume register
+                                    }
+                                })
+                                .setPositiveButton("등록 안함", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // cancel register
+                                    }
+                                });
+
+                        final AlertDialog warningDialog = warningBuilder.create();
+                        warningDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                            @Override
+                            public void onShow(DialogInterface dia2) {
+                                Button cancelAll = warningDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                                cancelAll.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(MainActivity.this, "다시 등록하려면 애플리케이션을 재시작 해야합니다.", Toast.LENGTH_LONG).show();
+                                        warningDialog.dismiss();
+                                        dialog.dismiss();
+                                    }
+                                });
+                            }
+                        });
+                        warningDialog.show();
+                    }
+                });
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void initialSetting(){
         final TextView statusTitle = findViewById(R.id.opp_status_title);
         final TextView deviceIDt = findViewById(R.id.device_id);
         statusTitle.setText(Global.getOpper()+"의 프로필");
@@ -202,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Map<String, Object> postVal = me.toMap();
                         Map<String, Object> childUpdates = new HashMap<>();
-                        childUpdates.put(Global.rootName+"/users/"+Global.getOwner(), postVal);
+                        childUpdates.put(Global.rootName+"/users/"+Global.curDeviceID, postVal);
 
                         FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
                     }
@@ -301,7 +410,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Map<String, Object> postVal = me.toMap();
                         Map<String, Object> childUpdates = new HashMap<>();
-                        childUpdates.put(Global.rootName+"/users/"+Global.getOwner(), postVal);
+                        childUpdates.put(Global.rootName+"/users/"+Global.curDeviceID, postVal);
 
                         FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
                         return true;
@@ -349,7 +458,7 @@ public class MainActivity extends AppCompatActivity {
                         me.FCMtoken = token;
                         Map<String, Object> postVal = me.toMap();
                         Map<String, Object> childUpdates = new HashMap<>();
-                        childUpdates.put(Global.rootName+"/users/"+Global.getOwner(), postVal);
+                        childUpdates.put(Global.rootName+"/users/"+Global.curDeviceID, postVal);
 
                         FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
                         // Log and toast

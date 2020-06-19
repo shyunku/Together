@@ -13,49 +13,39 @@ import shyunku.project.together.Engines.LogEngine;
 
 
 public class Global {
-    public static String version = "v0.13.2.356";
+    public static String version = "v0.14.5.374";
     public static String curDeviceID = "";
     public static String oppFCMkey = "";
+
+    public static String OwnerName = "";
+    public static String OpperName = "";
 
     //functions
     public static String getOppKey(){
         return oppFCMkey;
     }
 
-    private static int getCurrentUserIndex(){
-        for(int i=0;i<AUTHORIZED_CANDIDATES.length;i++){
-            if(AUTHORIZED_CANDIDATES[i].equals(curDeviceID))
-                return 1;
-        }
-        return 0;
-    }
-
 
     public static String getOwner(){
-        return userList[getCurrentUserIndex()];
+        return OwnerName;
     }
 
     public static String getOpper(){
-        return userList[1-getCurrentUserIndex()];
+        return OpperName;
     }
 
     public static void introduceMyself(){
-        new LogEngine().sendLog("Device owner : "+userList[getCurrentUserIndex()]);
+        new LogEngine().sendLog("Device owner : "+ getOwner());
     }
 
-    //never changes
-    public static final String[] userList = {
-            "조재훈", "조영훈"
-    };
+    //never changes  (must be two)
     public static final String rootName = "party-01482";
     public static final SimpleDateFormat sdf = new SimpleDateFormat("M월 d일 a h:mm", Locale.KOREA);
-    public static final SimpleDateFormat transactionDateFormat = new SimpleDateFormat("yyMMddHHmmss");
+    public static final SimpleDateFormat transactionDateFormat = new SimpleDateFormat("yyMMddHHmmss", Locale.KOREA);
     public static final SimpleDateFormat transactionReleaseDateFormat = new SimpleDateFormat("yy.MM.dd a h:mm:ss", Locale.KOREA);
-    public static final String FMC_SERVER_KEY = "AAAARb8XDHU:APA91bFj6ysDKxywfmeQDRL4kMPAZj2jgWAGlKtjL7cpXkRhpiyjaWPo2ENO_8sdK8KajOFCoYFh7quvmu2q6KF9BqN4Irf_j1ihEPts51cGOzFVf0kJfkf0FtVOjPcQ6XYjIbLz9PQS";
+    public static final String FCM_SERVER_KEY = "AAAARb8XDHU:APA91bFj6ysDKxywfmeQDRL4kMPAZj2jgWAGlKtjL7cpXkRhpiyjaWPo2ENO_8sdK8KajOFCoYFh7quvmu2q6KF9BqN4Irf_j1ihEPts51cGOzFVf0kJfkf0FtVOjPcQ6XYjIbLz9PQS";
 
-    public static final String[] AUTHORIZED_CANDIDATES={
-            "24da23bb985ce7"
-    };
+    // (must be two)
 
     public static void makeToast(Context context, String alert){
         Toast.makeText(context.getApplicationContext(), alert, Toast.LENGTH_SHORT).show();

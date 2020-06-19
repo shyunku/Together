@@ -11,16 +11,29 @@ import java.util.Map;
 import shyunku.project.together.R;
 
 public class User {
-    public String name = "";
-    public String status = "";
+    public String name = "-";
+    public String status = "-";
     public int happiness = 0;
-    public String FCMtoken = "EMPTY";
+    public String FCMtoken = "-";
     //public UserLocation location = new UserLocation(37.56, 126.97);
-    public double latitude = 5;
-    public double longitude = 4;
+    public double latitude = 0;
+    public double longitude = 0;
     public boolean allowLocShare = true;
+    public String deviceID = "";
+    public long registerTime = System.currentTimeMillis();
 
     public User(){
+    }
+
+    public User(String username, String deviceID){
+        this.name = username;
+        this.deviceID = deviceID;
+    }
+
+    public User(String username, String deviceID, String FCMtoken){
+        this.name = username;
+        this.deviceID = deviceID;
+        this.FCMtoken = FCMtoken;
     }
 
     public String getStatusDescription(Context context){
@@ -69,6 +82,7 @@ public class User {
         result.put("latitude", this.latitude);
         result.put("longitude", this.longitude);
         result.put("location_share", this.allowLocShare);
+        result.put("deviceID", this.deviceID);
 
         return result;
     }
