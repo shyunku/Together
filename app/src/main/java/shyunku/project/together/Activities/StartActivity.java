@@ -220,8 +220,6 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private void registerDevice(){
-        final DatabaseReference ref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
-
         // There is no me. - create one
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         final AlertDialog.Builder builder = new AlertDialog.Builder(StartActivity.this);

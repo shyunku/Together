@@ -23,11 +23,13 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout2"
-        android:layout_width="395dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:background="@color/light_gray"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -91,8 +93,8 @@
 
             <TextView
                 android:id="@+id/right_user_view"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_width="163dp"
+                android:layout_height="37dp"
                 android:layout_marginStart="8dp"
                 android:fontFamily="@font/rixgom"
                 android:gravity="center"
@@ -125,23 +127,34 @@
 
     <Button
         android:id="@+id/transaction_add_button"
-        android:layout_width="195dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
+        android:background="@drawable/standard_rounded_button"
         android:text="추가"
+        android:textColor="@color/MainTheme"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/transaction_settle_button"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/transaction_settle_button"
-        android:layout_width="195dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:background="@drawable/standard_rounded_button"
         android:text="결산"
+        android:textColor="@color/MainTheme"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/transaction_add_button" />
 
     <Button
         android:id="@+id/settle_all_button"
@@ -150,7 +163,10 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:background="@drawable/standard_rounded_button"
         android:text="결산된 내용 모두 삭제"
+        android:textColor="@color/MainTheme"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />

@@ -64,8 +64,20 @@ public class FirebaseManageEngine {
         return FirebaseDatabase.getInstance().getReference().child("userDumplist");
     }
 
-    public static DatabaseReference getPartyRef(String partyKey){
-        return FirebaseDatabase.getInstance().getReference().child("parties").child(partyKey);
+    public static DatabaseReference getPartyRef(){
+        return FirebaseDatabase.getInstance().getReference().child("parties").child(Global.curParty);
+    }
+
+    public static DatabaseReference getPartyTransactionsRef(){
+        return FirebaseDatabase.getInstance().getReference().child("parties").child(Global.curParty).child("transactions");
+    }
+
+    public static DatabaseReference getPartyUsersRef(){
+        return FirebaseDatabase.getInstance().getReference().child("parties").child(Global.curParty).child("users");
+    }
+
+    public static DatabaseReference getPartyChatsRef(){
+        return FirebaseDatabase.getInstance().getReference().child("parties").child(Global.curParty).child("chats");
     }
 
     public static void pushUserDump(UserDump userDump){
@@ -236,7 +248,7 @@ public class FirebaseManageEngine {
     }
 
     public static void getOppKeyFromFirebaseServer(){
-        DatabaseReference oppref = FirebaseManageEngine.getPartyRef(Global.curParty).child("users");
+        DatabaseReference oppref = FirebaseManageEngine.getPartyRef().child("users");
         oppref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

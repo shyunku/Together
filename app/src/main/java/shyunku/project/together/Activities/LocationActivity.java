@@ -110,7 +110,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         showOpp = (Button)findViewById(R.id.show_opp_pos);
         allowUpdate = (Switch)findViewById(R.id.auto_location_update);
 
-        final DatabaseReference uref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
+        final DatabaseReference uref = FirebaseManageEngine.getPartyUsersRef();
         uref.child(Global.curDeviceID).child("location_share").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -464,9 +464,9 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
 
         Map<String, Object> postVal = me.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(Global.rootName+"/users/"+Global.curDeviceID, postVal);
+        childUpdates.put(Global.curDeviceID, postVal);
 
-        FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
+        FirebaseManageEngine.getPartyUsersRef().updateChildren(childUpdates);
     }
 
     private String toAddressString(double latitude, double longitude){

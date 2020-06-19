@@ -1,6 +1,7 @@
 package shyunku.project.together.Activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,15 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
 
-import org.json.JSONObject;
-
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -41,7 +34,6 @@ import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Objects.Chat;
 import shyunku.project.together.R;
-import shyunku.project.together.Services.FirebaseInstanceService;
 
 public class TogetherTalkActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
@@ -69,6 +61,7 @@ public class TogetherTalkActivity extends AppCompatActivity {
     }
 
     public void initialSetting(){
+        final DatabaseReference chatRef = FirebaseManageEngine.getPartyChatsRef();
         final EditText sendableTextField = (EditText)findViewById(R.id.message_content);
         ImageButton  sendButton = (ImageButton)findViewById(R.id.send_message_button);
 
@@ -77,7 +70,7 @@ public class TogetherTalkActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(System.currentTimeMillis());
-                String key = FirebaseManageEngine.getFreshLocalDBref().child(Global.rootName+"/chats").push().getKey();
+                String key = chatRef.push().getKey();
 
                 Chat chat = new Chat(Global.getOwner(), Global.sdf.format(cal.getTime()), false, sendableTextField.getText().toString(), key);
 
@@ -86,20 +79,20 @@ public class TogetherTalkActivity extends AppCompatActivity {
 
                 Map<String, Object> postVal = chat.toMap();
                 Map<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put(Global.rootName+"/chats/"+key, postVal);
+                childUpdates.put(key, postVal);
 
                 InputMethodManager ipm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 //ipm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
 
+
+                chatRef.updateChildren(childUpdates);
                 FirebaseManageEngine.sendNotificationChatMessage(chat.content);
             }
         });
 
-        final DatabaseReference ref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/chats");
-        ref.addValueEventListener(updateReader);
+        chatRef.addValueEventListener(updateReader);
 
-        ref.addChildEventListener(new ChildEventListener() {
+        chatRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Chat chat = dataSnapshot.getValue(Chat.class);
@@ -135,14 +128,12 @@ public class TogetherTalkActivity extends AppCompatActivity {
 
             }
         });
-
-        getSupportActionBar().hide();
     }
 
     private ValueEventListener updateReader = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            final DatabaseReference ref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/chats");
+            final DatabaseReference ref = FirebaseManageEngine.getPartyChatsRef();
             for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                 Chat chat = snapshot.getValue(Chat.class);
                 if(!chat.sender.equals(Global.getOwner())) {
@@ -160,7 +151,7 @@ public class TogetherTalkActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        final DatabaseReference ref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/chats");
+        final DatabaseReference ref = FirebaseManageEngine.getPartyChatsRef();
         ref.removeEventListener(updateReader);
     }
 }

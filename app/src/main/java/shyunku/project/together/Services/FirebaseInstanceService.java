@@ -139,7 +139,7 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
         //상대가 권한을 얻었다고 가정
         if(isForeground())return;
 
-        DatabaseReference locref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users/"+Global.getOwner());
+        DatabaseReference locref = FirebaseManageEngine.getPartyUsersRef().child(Global.curDeviceID);
         DatabaseReference refs = locref.child("location_share");
         refs.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

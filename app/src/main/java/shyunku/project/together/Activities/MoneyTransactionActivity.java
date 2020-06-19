@@ -2,6 +2,7 @@ package shyunku.project.together.Activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,6 +88,8 @@ public class MoneyTransactionActivity extends AppCompatActivity {
         leftside.setText(Global.getOwner());
         rightside.setText(Global.getOpper());
 
+        final DatabaseReference transRef = FirebaseManageEngine.getPartyTransactionsRef();
+
         settleAllButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,7 +104,7 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                 try {
                     final long standTamp = Global.transactionDateFormat.parse(stamp).getTime();
 
-                    final DatabaseReference myref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/transactions");
+                    final DatabaseReference myref = FirebaseManageEngine.getPartyTransactionsRef();
                     myref.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -171,18 +174,17 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if(title.getText().length()==0)return;
                         final int checkedButtonIndex = radioGroup.getCheckedRadioButtonId();
+
                         Calendar cal = Calendar.getInstance();
                         cal.setTimeInMillis(System.currentTimeMillis());
                         MoneyTransaction transaction = new MoneyTransaction(title.getText().toString(), checkedButtonIndex == R.id.radio_payback?Global.getOwner():Global.getOpper(), value.getText().toString() ,Global.transactionDateFormat.format(cal.getTime()).toString());
-                        String key = FirebaseManageEngine.getFreshLocalDBref().child(Global.rootName+"/transactions").push().getKey();
+                        String key = transRef.push().getKey();
 
                         Map<String, Object> postVal = transaction.toMap();
                         Map<String, Object> childUpdates = new HashMap<>();
-                        childUpdates.put(Global.rootName+"/transactions/"+key, postVal);
+                        childUpdates.put(key, postVal);
 
-                        FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
-
-                        //FirebaseManageEngine.sendNotificationChatMessage(chat.content);
+                        transRef.updateChildren(childUpdates);
                     }
                 });
 
@@ -202,18 +204,17 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                 }
 
                 MoneyTransaction transaction = new MoneyTransaction(Global.transactionDateFormat.format(cal.getTime()));
-                String key = FirebaseManageEngine.getFreshLocalDBref().child(Global.rootName+"/transactions").push().getKey();
+                String key = FirebaseManageEngine.getPartyTransactionsRef().push().getKey();
 
                 Map<String, Object> postVal = transaction.toMap();
                 Map<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put(Global.rootName+"/transactions/"+key, postVal);
+                childUpdates.put(key, postVal);
 
-                FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
+                transRef.updateChildren(childUpdates);
             }
         });
 
-        DatabaseReference myref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/transactions");
-        myref.addChildEventListener(new ChildEventListener() {
+        transRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String s) {
                 MoneyTransaction transaction = snapshot.getValue(MoneyTransaction.class);

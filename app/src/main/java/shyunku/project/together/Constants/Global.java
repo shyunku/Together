@@ -13,7 +13,7 @@ import shyunku.project.together.Engines.Lgm;
 
 
 public class Global {
-    public static String version = "v0.15.13.456";
+    public static String version = "v0.16.0.461";
 
     public static String curDeviceID = "";
     public static String curParty = "";
@@ -33,7 +33,6 @@ public class Global {
     public static String getOwner(){
         return OwnerName;
     }
-
     public static String getOpper(){
         return OpperName;
     }
@@ -42,7 +41,6 @@ public class Global {
         Lgm.g("Device owner : "+ getOwner());
     }
 
-    public static final String rootName = "party-01482";
     public static final SimpleDateFormat sdf = new SimpleDateFormat("M월 d일 a h:mm", Locale.KOREA);
     public static final SimpleDateFormat transactionDateFormat = new SimpleDateFormat("yyMMddHHmmss", Locale.KOREA);
     public static final SimpleDateFormat transactionReleaseDateFormat = new SimpleDateFormat("yy.MM.dd a h:mm:ss", Locale.KOREA);

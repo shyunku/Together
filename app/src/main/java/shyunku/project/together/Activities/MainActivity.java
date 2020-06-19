@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void listenToUserInfo(){
-        final DatabaseReference partyRef = FirebaseManageEngine.getPartyRef(meDump.subordinatedParty);
+        final DatabaseReference partyRef = FirebaseManageEngine.getPartyRef();
         final DatabaseReference userRef = partyRef.child("users");
 
         final TextView myStatusView = findViewById(R.id.my_status);
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         final Button updateStatusButton = findViewById(R.id.update_status_button);
         final Button viewLocation = findViewById(R.id.view_our_location);
 
-        final DatabaseReference myRef = FirebaseManageEngine.getPartyRef(meDump.subordinatedParty).child("users").child(Global.curDeviceID);
+        final DatabaseReference myRef = FirebaseManageEngine.getPartyRef().child("users").child(Global.curDeviceID);
 
         myHappinessProgressBar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                 LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 View viewGroup = inflater.inflate(R.layout.happiness_update, (ViewGroup)findViewById(R.id.happiness_update_layout));
-                builder.setTitle("기분 지수 업데이트");
+                builder.setTitle("컨디션 지수 업데이트");
                 builder.setView(viewGroup );
 
                 final SeekBar seekBar = (SeekBar)viewGroup.findViewById(R.id.happiness_seekBar);
@@ -360,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
                         //new LogEngine().sendLog("FCM_KEY = "+me.FCMtoken);
 
 
-                        final DatabaseReference myRef = FirebaseManageEngine.getPartyRef(meDump.subordinatedParty).child("users").child(Global.curDeviceID);
+                        final DatabaseReference myRef = FirebaseManageEngine.getPartyRef().child("users").child(Global.curDeviceID);
                         myRef.child("token").setValue(token);
                         // Log and toast
                     }
