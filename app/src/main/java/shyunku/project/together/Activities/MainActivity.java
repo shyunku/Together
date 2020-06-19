@@ -104,6 +104,11 @@ public class MainActivity extends AppCompatActivity {
                     statusDescription.setText(me.getStatusDescription(MainActivity.this));
                     happinessView.setText(me.happiness+"/100");
                     myStatusBG.setBackgroundResource(me.getStatusBackgroundColorTag(MainActivity.this));
+
+                    final TextView deviceIDt = findViewById(R.id.device_id);
+                    deviceIDt.setText("Device ID : "+Global.curDeviceID);
+                    final TextView Ver = findViewById(R.id.version);
+                    Ver.setText(Global.version +" |  "+Global.getOwner()+" 전용");
                 }
             }
 
@@ -144,6 +149,9 @@ public class MainActivity extends AppCompatActivity {
 
                         Global.setOppFCMkey((String) snapshot.child("token").getValue());
                         //new LogEngine().sendLog("opp FCM_KEY = "+Global.oppFCMkey);
+
+                        final TextView statusTitle = findViewById(R.id.opp_status_title);
+                        statusTitle.setText(Global.getOpper()+"의 프로필");
                     }
                 }
 
@@ -254,13 +262,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initialSetting(){
-        final TextView statusTitle = findViewById(R.id.opp_status_title);
-        final TextView deviceIDt = findViewById(R.id.device_id);
-        statusTitle.setText(Global.getOpper()+"의 프로필");
-
-        final TextView Ver = findViewById(R.id.version);
-        deviceIDt.setText("Device ID : "+Global.curDeviceID);
-        Ver.setText(Global.version +" |  "+Global.getOwner()+" 전용");
         final Button updateHappinessBtn = findViewById(R.id.update_happiness_button);
         updateHappinessBtn.setOnClickListener(new View.OnClickListener() {
             @Override
