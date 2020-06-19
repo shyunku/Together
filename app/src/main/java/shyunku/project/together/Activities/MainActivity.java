@@ -61,7 +61,7 @@ import shyunku.project.together.R;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
     UserDump meDump;
-
+    boolean isOppExist = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
                         final TextView statusTitle = findViewById(R.id.opp_status_title);
                         statusTitle.setText(String.format("%s의 프로필", Global.getOpper()));
+
+                        isOppExist = true;
                     }
                 }
             }
