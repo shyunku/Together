@@ -20,6 +20,7 @@ public class User {
     //public UserLocation location = new UserLocation(37.56, 126.97);
     public double latitude = 0;
     public double longitude = 0;
+    @PropertyName("location_share")
     public boolean allowLocShare = true;
     public String deviceID = "";
     public long registerTime = System.currentTimeMillis();

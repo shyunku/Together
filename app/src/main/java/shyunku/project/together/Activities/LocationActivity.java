@@ -110,22 +110,18 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         showOpp = (Button)findViewById(R.id.show_opp_pos);
         allowUpdate = (Switch)findViewById(R.id.auto_location_update);
 
-        DatabaseReference mr = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users/"+Global.curDeviceID).child("location_share");
-        mr.addListenerForSingleValueEvent(new ValueEventListener() {
+        final DatabaseReference uref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
+        uref.child(Global.curDeviceID).child("location_share").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Boolean allowed = dataSnapshot.getValue(Boolean.class);
-                allowUpdate.setChecked(allowed);
+                //allowUpdate.setChecked(allowed);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
-
-        //my info
-        final DatabaseReference uref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
-
         // Listen My Info
         uref.child(Global.curDeviceID).addValueEventListener(new ValueEventListener() {
             @Override
@@ -204,13 +200,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         allowUpdate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton view, boolean b) {
-                me.allowLocShare = b;
-
-                Map<String, Object> postVal = me.toMap();
-                Map<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put(Global.rootName+"/users/"+Global.curDeviceID, postVal);
-
-                FirebaseManageEngine.getFreshLocalDBref().updateChildren(childUpdates);
+                uref.child(Global.curDeviceID).child("location_share").setValue(b);
             }
         });
     }
@@ -319,8 +309,8 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         List<Address> addresses;
 
         try {
-            addresses = geocoder.getFromLocation(latlng.latitude, latlng.longitude, 5);
-            new LogEngine().sendLog("Address size "+addresses.size());
+            addresses = geocoder.getFromLocation(latlng.latitude, latlng.longitude, 3);
+            //new LogEngine().sendLog("Address size "+addresses.size());
         } catch (IOException e) {
             //네트워크 문제
             Toast.makeText(this, "GeoCoder service unable", Toast.LENGTH_LONG).show();
