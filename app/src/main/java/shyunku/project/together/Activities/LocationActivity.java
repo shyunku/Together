@@ -73,7 +73,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     private static final String TAG = "google_map";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int UPDATE_INTERVAL_MS = 30000;                //업데이트 주기 = 30초
-    private static final int FASTEST_UPDATE_INTERVAL_MS = 12000;        // 최소 업데이트 주기 = 12초
+    private static final int FASTEST_UPDATE_INTERVAL_MS = 15000;        // 최소 업데이트 주기 = 15초
 
     private static final int PERMISSONS_REQUEST_CODE = 100;
     boolean needRequest = false;

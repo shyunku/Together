@@ -9,6 +9,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/translucent"
         app:cardCornerRadius="5dp"
         app:cardElevation="2dp"
         app:cardUseCompatPadding="true"
@@ -19,7 +20,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/DarkTheme">
+            android:background="@color/SemiTranslucentItem">
 
             <TextView
                 android:id="@+id/transaction_item_name"
@@ -29,7 +30,7 @@
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/rixgom"
                 android:text="-"
-                android:textColor="@color/pure_white"
+                android:textColor="@color/MainTheme"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +45,7 @@
                 android:layout_marginBottom="8dp"
                 android:fontFamily="@font/rixgom"
                 android:text="- → -"
-                android:textColor="@color/pure_white"
+                android:textColor="@color/MainTheme"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/transaction_item_name" />
@@ -70,7 +71,7 @@
                 android:layout_marginEnd="8dp"
                 android:fontFamily="@font/rixgom"
                 android:text="-"
-                android:textColor="@color/pure_white"
+                android:textColor="@color/MainTheme"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

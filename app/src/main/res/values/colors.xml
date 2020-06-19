@@ -22,4 +22,7 @@
     <color name="transaction_red">#FF3227</color>
     <color name="status_inclass">#FF0059</color>
     <color name="MainTheme">#075A4C</color>
+    <color name="SemiTranslucent">#4B000000</color>
+    <color name="SemiTranslucentItem">#CDFFFFFF</color>
+    <color name="translucent">#00000000</color>
 </resources>

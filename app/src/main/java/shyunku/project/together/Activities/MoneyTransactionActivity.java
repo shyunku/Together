@@ -172,12 +172,19 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                 builder.setPositiveButton("추가", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if(title.getText().length()==0)return;
+                        String transactionTitle = title.getText().toString();
+                        long registerValue = Integer.parseInt(value.getText().toString());
+
+                        if(transactionTitle.isEmpty())return;
                         final int checkedButtonIndex = radioGroup.getCheckedRadioButtonId();
 
                         Calendar cal = Calendar.getInstance();
                         cal.setTimeInMillis(System.currentTimeMillis());
-                        MoneyTransaction transaction = new MoneyTransaction(title.getText().toString(), checkedButtonIndex == R.id.radio_payback?Global.getOwner():Global.getOpper(), value.getText().toString() ,Global.transactionDateFormat.format(cal.getTime()).toString());
+                        MoneyTransaction transaction = new MoneyTransaction(
+                                transactionTitle,
+                                checkedButtonIndex == R.id.radio_payback?Global.getOwner():Global.getOpper(),
+                                registerValue + "",
+                                Global.transactionDateFormat.format(cal.getTime()));
                         String key = transRef.push().getKey();
 
                         Map<String, Object> postVal = transaction.toMap();

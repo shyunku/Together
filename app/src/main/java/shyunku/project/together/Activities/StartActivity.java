@@ -92,7 +92,6 @@ public class StartActivity extends AppCompatActivity {
                     usernameView.setText(String.format("Your Username : %s", meDump.username));
 
                     // Check SubParty
-                    Lgm.g("party: "+meDump.subordinatedParty+", user: "+Global.curDeviceID);
                     FirebaseManageEngine.getPartiesRef().child(meDump.subordinatedParty).child("users").child(Global.curDeviceID)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
