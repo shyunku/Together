@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Pair;
 
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.PropertyName;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ public class User {
     public String name = "-";
     public String status = "-";
     public int happiness = 0;
+    @PropertyName("token")
     public String FCMtoken = "-";
     //public UserLocation location = new UserLocation(37.56, 126.97);
     public double latitude = 0;

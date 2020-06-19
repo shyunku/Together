@@ -109,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
                     deviceIDt.setText("Device ID : "+Global.curDeviceID);
                     final TextView Ver = findViewById(R.id.version);
                     Ver.setText(Global.version +" |  "+Global.getOwner()+" 전용");
+
+                    registerFCMKey();
                 }
             }
 
@@ -147,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
                         happinessView.setText(opp.happiness+"/100");
                         oppStatusBG.setBackgroundResource(opp.getStatusBackgroundColorTag(MainActivity.this));
 
-                        Global.setOppFCMkey((String) snapshot.child("token").getValue());
-                        //new LogEngine().sendLog("opp FCM_KEY = "+Global.oppFCMkey);
+                        Global.setOppFCMkey(opp.FCMtoken);
+                        //new LogEngine().sendLog("opp FCM_KEY = "+opp.FCMtoken);
 
                         final TextView statusTitle = findViewById(R.id.opp_status_title);
                         statusTitle.setText(Global.getOpper()+"의 프로필");
@@ -188,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final String newUsername = username.getText().toString();
-                boolean isShouldBeDeleted = false;
+
                 if(newUsername.length() < 2){
                     Toast.makeText(MainActivity.this, "이름은 2자 이상 입력해주세요.", Toast.LENGTH_LONG).show();
                     return;
@@ -196,7 +198,6 @@ public class MainActivity extends AppCompatActivity {
 
                 if(usernameList.size() == 2){
                     ref.child(usernameList.get(0)).removeValue();
-                    isShouldBeDeleted = true;
                 }
 
 
@@ -204,8 +205,6 @@ public class MainActivity extends AppCompatActivity {
                 Map<String, Object> postVal = me.toMap();
                 Map<String, Object> childUpdates = new HashMap<>();
                 childUpdates.put(Global.rootName + "/users/" + Global.curDeviceID, postVal);
-
-                registerFCMKey();
             }
         });
 
