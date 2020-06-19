@@ -92,12 +92,14 @@ public class StartActivity extends AppCompatActivity {
                     usernameView.setText(String.format("Your Username : %s", meDump.username));
 
                     // Check SubParty
+                    Lgm.g("party: "+meDump.subordinatedParty+", user: "+Global.curDeviceID);
                     FirebaseManageEngine.getPartiesRef().child(meDump.subordinatedParty).child("users").child(Global.curDeviceID)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
                                     if(dataSnapshot2.exists()){
                                         // Party Exists & Member Exists
+                                        setCurrentMessage("Fetching party Info...");
                                         Intent intent = new Intent(StartActivity.this, MainActivity.class);
                                         intent.putExtra("UserDump", meDump);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -142,7 +144,7 @@ public class StartActivity extends AppCompatActivity {
                 FirebaseManageEngine.pushSomething(partyRef.child(partyKey).child("users"), me.deviceID, me.toMap());
 
                 // UserDump에 기록
-                FirebaseManageEngine.getUserDumpListRef().child(me.deviceID).child("subParty").setValue(partyKey);
+                FirebaseManageEngine.registerJoinedPartyCode(partyKey);
             }
         });
 

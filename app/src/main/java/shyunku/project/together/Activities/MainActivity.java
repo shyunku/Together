@@ -11,6 +11,9 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -150,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         final Button updateHappinessBtn = findViewById(R.id.update_happiness_button);
         final Button goTogetherTalkButton = findViewById(R.id.go_together_talk);
         final Button requestButton = findViewById(R.id.request_button);
+        final TextView partyCodeView = findViewById(R.id.party_code);
         final DatabaseReference myRef = FirebaseManageEngine.getPartyRef(meDump.subordinatedParty).child("users").child(Global.curDeviceID);
 
         updateHappinessBtn.setOnClickListener(new View.OnClickListener() {
@@ -322,6 +326,20 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, MoneyTransactionActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        partyCodeView.setText(String.format("Party Code: %s", meDump.subordinatedParty));
+        // click to copy party code
+        partyCodeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // assert that sdk level > 11 (honeycomb)
+                ClipboardManager clipboardManager = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clipData = ClipData.newPlainText("Together Party Code", meDump.subordinatedParty);
+                clipboardManager.setPrimaryClip(clipData);
+
+                Global.makeToast(MainActivity.this, "참가 코드가 클립보드에 복사되었습니다.");
             }
         });
     }

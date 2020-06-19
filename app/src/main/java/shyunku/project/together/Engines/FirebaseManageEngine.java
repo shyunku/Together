@@ -78,7 +78,7 @@ public class FirebaseManageEngine {
     }
 
     public static void registerJoinedPartyCode(String code){
-        FirebaseManageEngine.getUserDumpListRef().child(Global.curDeviceID).child("subParty").setValue(code);
+        getUserDumpListRef().child(Global.curDeviceID).child("subParty").setValue(code);
     }
 
     public static void pushSomething(DatabaseReference parentRef, String key, Map<String, Object> map){
