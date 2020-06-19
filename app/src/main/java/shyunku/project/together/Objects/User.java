@@ -23,7 +23,6 @@ public class User {
     @PropertyName("location_share")
     public boolean allowLocShare = true;
     public String deviceID = "";
-    public long registerTime = System.currentTimeMillis();
 
     public User(){
     }

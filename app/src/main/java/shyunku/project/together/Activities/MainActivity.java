@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -84,6 +85,11 @@ public class MainActivity extends AppCompatActivity {
     private void listenToUserInfo(){
         final DatabaseReference ref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
 
+        final TextView myStatusView = findViewById(R.id.my_status);
+        final TextView myStatusDescription = findViewById(R.id.my_status_message);
+        final TextView myHappinessView = findViewById(R.id.my_happiness);
+        final ProgressBar myHappinessBar = findViewById(R.id.my_happiness_bar);
+
         // Listen My Info
         ref.child(Global.curDeviceID).addValueEventListener(new ValueEventListener() {
             @Override
@@ -91,19 +97,13 @@ public class MainActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()){
                     // Already Exists
                     me = dataSnapshot.getValue(User.class);
-
                     Global.OwnerName = me.name;
 
-                    final TextView statusView = findViewById(R.id.my_status);
-                    final TextView statusDescription = findViewById(R.id.my_status_message);
-                    final TextView happinessView = findViewById(R.id.my_happiness);
-
-                    final ConstraintLayout myStatusBG = findViewById(R.id.my_status_color);
-
-                    statusView.setText(me.status);
-                    statusDescription.setText(me.getStatusDescription(MainActivity.this));
-                    happinessView.setText(me.happiness+"/100");
-                    myStatusBG.setBackgroundResource(me.getStatusBackgroundColorTag(MainActivity.this));
+                    myStatusView.setText(me.status);
+                    myStatusDescription.setText(me.getStatusDescription(MainActivity.this));
+                    myHappinessView.setText(me.happiness+"");
+                    myHappinessBar.setProgress(me.happiness);
+                    //myStatusBG.setBackgroundResource(me.getStatusBackgroundColorTag(MainActivity.this));
 
                     final TextView deviceIDt = findViewById(R.id.device_id);
                     deviceIDt.setText("Device ID : "+Global.curDeviceID);
@@ -119,6 +119,11 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        final TextView oppStatusView = findViewById(R.id.opp_status);
+        final TextView oppStatusDescription = findViewById(R.id.opp_status_message);
+        final TextView oppHappinessView = findViewById(R.id.opp_happiness);
+        final ProgressBar oppHappinessBar = findViewById(R.id.opp_happiness_bar);
 
         // Listen Opp Info and create me if I doesn't exist
         ref.addValueEventListener(new ValueEventListener() {
@@ -136,18 +141,13 @@ public class MainActivity extends AppCompatActivity {
                         foundMe = true;
                     }else{
                         opp = snapshot.getValue(User.class);
-
                         Global.OpperName = opp.name;
 
-                        final TextView statusView = findViewById(R.id.opp_status);
-                        final TextView statusDescription = findViewById(R.id.opp_status_message);
-                        final TextView happinessView = findViewById(R.id.opp_happiness);
-                        final ConstraintLayout oppStatusBG = findViewById(R.id.opp_status_color);
-
-                        statusView.setText(opp.status);
-                        statusDescription.setText(opp.getStatusDescription(MainActivity.this));
-                        happinessView.setText(opp.happiness+"/100");
-                        oppStatusBG.setBackgroundResource(opp.getStatusBackgroundColorTag(MainActivity.this));
+                        oppStatusView.setText(opp.status);
+                        oppStatusDescription.setText(opp.getStatusDescription(MainActivity.this));
+                        oppHappinessView.setText(opp.happiness+"");
+                        oppHappinessBar.setProgress(opp.happiness);
+                        //oppStatusBG.setBackgroundResource(opp.getStatusBackgroundColorTag(MainActivity.this));
 
                         Global.setOppFCMkey(opp.FCMtoken);
                         //new LogEngine().sendLog("opp FCM_KEY = "+opp.FCMtoken);
@@ -307,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
                 builder.setPositiveButton("업데이트", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        me.happiness = Integer.parseInt(seekBar.getProgress()+"");
+                        me.happiness = seekBar.getProgress();
 
                         Map<String, Object> postVal = me.toMap();
                         Map<String, Object> childUpdates = new HashMap<>();

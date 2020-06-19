@@ -13,7 +13,7 @@ import shyunku.project.together.Engines.LogEngine;
 
 
 public class Global {
-    public static String version = "v0.14.10.390";
+    public static String version = "v0.15.0.395";
     public static String curDeviceID = "";
     public static String oppFCMkey = "";
 
@@ -38,14 +38,11 @@ public class Global {
         new LogEngine().sendLog("Device owner : "+ getOwner());
     }
 
-    //never changes  (must be two)
     public static final String rootName = "party-01482";
     public static final SimpleDateFormat sdf = new SimpleDateFormat("M월 d일 a h:mm", Locale.KOREA);
     public static final SimpleDateFormat transactionDateFormat = new SimpleDateFormat("yyMMddHHmmss", Locale.KOREA);
     public static final SimpleDateFormat transactionReleaseDateFormat = new SimpleDateFormat("yy.MM.dd a h:mm:ss", Locale.KOREA);
     public static final String FCM_SERVER_KEY = "AAAARb8XDHU:APA91bFj6ysDKxywfmeQDRL4kMPAZj2jgWAGlKtjL7cpXkRhpiyjaWPo2ENO_8sdK8KajOFCoYFh7quvmu2q6KF9BqN4Irf_j1ihEPts51cGOzFVf0kJfkf0FtVOjPcQ6XYjIbLz9PQS";
-
-    // (must be two)
 
     public static void makeToast(Context context, String alert){
         Toast.makeText(context.getApplicationContext(), alert, Toast.LENGTH_SHORT).show();
