@@ -9,11 +9,11 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import shyunku.project.together.Engines.LogEngine;
+import shyunku.project.together.Engines.Lgm;
 
 
 public class Global {
-    public static String version = "v0.15.4.425";
+    public static String version = "v0.15.6.438";
     public static String curDeviceID = "";
     public static String oppFCMkey = "";
 
@@ -35,7 +35,7 @@ public class Global {
     }
 
     public static void introduceMyself(){
-        new LogEngine().sendLog("Device owner : "+ getOwner());
+        Lgm.g("Device owner : "+ getOwner());
     }
 
     public static final String rootName = "party-01482";

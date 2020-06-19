@@ -60,8 +60,8 @@ import java.util.Map;
 
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
+import shyunku.project.together.Engines.Lgm;
 import shyunku.project.together.Engines.LocationUpdateNotificationManager;
-import shyunku.project.together.Engines.LogEngine;
 import shyunku.project.together.Objects.User;
 import shyunku.project.together.R;
 
@@ -249,7 +249,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
                 location = locationList.get(locationList.size() - 1);
                 currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
 
-                new LogEngine().sendLog(location.getLatitude()+", "+location.getLongitude());
+                Lgm.g(location.getLatitude()+", "+location.getLongitude());
                 String markerTitle = getCurrentAddress(currentPosition);
                 String markerSnippet = "위도 : " + String.valueOf(location.getLatitude()) + ", 경도 : "+String.valueOf(location.getLongitude());
 
@@ -471,7 +471,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
 
     private String toAddressString(double latitude, double longitude){
         new LatLng(latitude,longitude);
-        new LogEngine().sendLog(latitude+", "+longitude);
+        Lgm.g(latitude+", "+longitude);
         return getCurrentAddress(new LatLng(latitude, longitude));
     }
 

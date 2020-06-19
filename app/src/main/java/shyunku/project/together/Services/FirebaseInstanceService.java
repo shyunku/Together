@@ -27,7 +27,7 @@ import shyunku.project.together.Activities.MainActivity;
 import shyunku.project.together.Activities.TogetherTalkActivity;
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
-import shyunku.project.together.Engines.LogEngine;
+import shyunku.project.together.Engines.Lgm;
 import shyunku.project.together.R;
 
 public class FirebaseInstanceService extends FirebaseMessagingService {
@@ -40,7 +40,7 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
         FirebaseManageEngine.getOppKeyFromFirebaseServer();
 
         String MessageTag = remoteMessage.getData().get("tag");
-        new LogEngine().sendLog(MessageTag + ") Message Received, content = "+remoteMessage.getData().get("body"));
+        Lgm.g(MessageTag + ") Message Received, content = "+remoteMessage.getData().get("body"));
         if(MessageTag.equals("chat")) {
             if (isForeground()) return;
             sendChatNotification(remoteMessage.getData().get("title"), remoteMessage.getData().get("body"));
@@ -145,7 +145,7 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean isShareAllowed = dataSnapshot.getValue(Boolean.class);
-                new LogEngine().sendLog(isShareAllowed+"");
+                Lgm.g(isShareAllowed+"");
             }
 
             @Override

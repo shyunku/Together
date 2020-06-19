@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.util.Log;
 
 import shyunku.project.together.Engines.FirebaseManageEngine;
-import shyunku.project.together.Engines.LogEngine;
 
 public class ActionService extends IntentService {
     public static final String RESPONSE_YES_ACTION_FLAG = "RYAF";

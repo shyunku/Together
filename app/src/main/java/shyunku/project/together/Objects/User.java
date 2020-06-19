@@ -14,7 +14,7 @@ import shyunku.project.together.R;
 public class User {
     public String name = "-";
     public String status = "-";
-    public int happiness = 0;
+    public int happiness = 50;
     @PropertyName("token")
     public String FCMtoken = "-";
     //public UserLocation location = new UserLocation(37.56, 126.97);
@@ -47,7 +47,7 @@ public class User {
             return context.getResources().getString(R.string.status_sleeping_description);
         if(status.equals(context.getResources().getString(R.string.status_inclass_message)))
             return context.getResources().getString(R.string.status_inclass_description);
-        return context.getResources().getString(R.string.status_public_description);
+        return context.getResources().getString(R.string.status_default_description);
     }
 
     public int getStatusBackgroundColorTag(Context context){

@@ -64,6 +64,10 @@ public class FirebaseManageEngine {
         return FirebaseDatabase.getInstance().getReference().child("userDumplist");
     }
 
+    public static DatabaseReference getPartyRef(String partyKey){
+        return FirebaseDatabase.getInstance().getReference().child("parties").child(partyKey);
+    }
+
     public static void pushUserDump(UserDump userDump){
         DatabaseReference ref = getUserDumpListRef();
         Map<String, Object> post = userDump.toMap();
@@ -75,6 +79,12 @@ public class FirebaseManageEngine {
 
     public static void registerJoinedPartyCode(String code){
         FirebaseManageEngine.getUserDumpListRef().child(Global.curDeviceID).child("subParty").setValue(code);
+    }
+
+    public static void pushSomething(DatabaseReference parentRef, String key, Map<String, Object> map){
+        Map<String, Object> child = new HashMap<>();
+        child.put(key, map);
+        parentRef.updateChildren(child);
     }
 
     public static void sendNotificationChatMessage(final String msgContent) {
@@ -112,7 +122,7 @@ public class FirebaseManageEngine {
     }
 
     public static void sendNotificationRequestMessage(final String msgContent) {
-        new LogEngine().sendLog("OPP_FCM_KEY = "+Global.getOppKey());
+        Lgm.g("OPP_FCM_KEY = "+Global.getOppKey());
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -147,7 +157,7 @@ public class FirebaseManageEngine {
     }
 
     public static void sendLocationRequestMessage() {
-        new LogEngine().sendLog("OPP_FCM_KEY = "+Global.getOppKey());
+        Lgm.g("OPP_FCM_KEY = "+Global.getOppKey());
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -182,7 +192,7 @@ public class FirebaseManageEngine {
     }
 
     public static void sendNotificationResponseMessage(final boolean response) {
-        new LogEngine().sendLog("OPP_FCM_KEY = "+Global.getOppKey());
+        Lgm.g("OPP_FCM_KEY = "+Global.getOppKey());
         new Thread(new Runnable() {
             @Override
             public void run() {

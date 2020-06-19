@@ -42,7 +42,6 @@ import java.util.Map;
 import shyunku.project.together.Adapters.TransactionAdapter;
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
-import shyunku.project.together.Engines.LogEngine;
 import shyunku.project.together.Objects.Chat;
 import shyunku.project.together.Objects.MoneyTransaction;
 import shyunku.project.together.Objects.User;
@@ -108,12 +107,10 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             for(DataSnapshot data : dataSnapshot.getChildren()){
                                 String str = data.child("timestamp").getValue().toString();
-                                new LogEngine().sendLog("str : "+str);
                                 try {
                                     long time = Global.transactionDateFormat.parse(str).getTime();
                                     if(time <= standTamp) {
                                         myref.child(data.getKey()).removeValue();
-                                        new LogEngine().sendLog("remove this");
                                     }
                                 }catch(ParseException e){
                                     e.printStackTrace();
@@ -273,7 +270,6 @@ public class MoneyTransactionActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                new LogEngine().sendLog("remove");
                 String stamp = dataSnapshot.getValue(MoneyTransaction.class).timestamp;
                 Iterator<MoneyTransaction> iter = transactions.iterator();
                 while(iter.hasNext()){

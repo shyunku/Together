@@ -3,10 +3,11 @@ package shyunku.project.together.Objects;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.PropertyName;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserDump {
+public class UserDump implements Serializable {
     @PropertyName("username")
     public String username = "-";
     public String deviceID = "";

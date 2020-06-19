@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import shyunku.project.together.Constants.Global;
-import shyunku.project.together.Engines.LogEngine;
 import shyunku.project.together.Objects.MoneyTransaction;
 import shyunku.project.together.R;
 

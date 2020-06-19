@@ -1,9 +1,11 @@
 package shyunku.project.together.Activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -19,6 +21,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,7 +35,7 @@ import java.util.Map;
 
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
-import shyunku.project.together.Engines.LogEngine;
+import shyunku.project.together.Engines.Lgm;
 import shyunku.project.together.Objects.User;
 import shyunku.project.together.Objects.UserDump;
 import shyunku.project.together.R;
@@ -41,10 +45,22 @@ public class StartActivity extends AppCompatActivity {
     Button createPartyBtn;
     Button joinPartyBtn;
 
+    UserDump meDump;
+
+    final int CODE = 4;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.start_page);
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)){
+
+            }else{
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, CODE);
+            }
+        }
 
         // Views
         final TextView deviceIdView = findViewById(R.id.display_device_id);
@@ -61,7 +77,7 @@ public class StartActivity extends AppCompatActivity {
         @SuppressLint("HardwareIds") final String deviceId = Global.sha256(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
 
         Global.setCurrentDeviceID(deviceId);
-        new LogEngine().sendLog("DEVICE_ID = "+Global.curDeviceID);
+        Lgm.g("DEVICE_ID = "+Global.curDeviceID);
 
         deviceIdView.setText(String.format("Your Device ID : %s", Global.curDeviceID));
 
@@ -72,31 +88,34 @@ public class StartActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()){
                     // Exist
                     setCurrentMessage("Checking for User Info...");
-                    UserDump me = dataSnapshot.getValue(UserDump.class);
-                    usernameView.setText(String.format("Your Username : %s", me.username));
+                    meDump = dataSnapshot.getValue(UserDump.class);
+                    usernameView.setText(String.format("Your Username : %s", meDump.username));
 
                     // Check SubParty
-                    FirebaseManageEngine.getPartiesRef().child(me.subordinatedParty).child(me.deviceID).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
-                            if(dataSnapshot2.exists()){
-                                // Party Exists & Member Exists
-                                Intent intent = new Intent(StartActivity.this, MainActivity.class);
-                                startActivity(intent);
-                            }else{
-                                // No Party Subordinated
-                                Toast.makeText(StartActivity.this,"어느 파티에도 속해 있지 않습니다. 파티를 생성하거나 참가해주세요.", Toast.LENGTH_SHORT).show();
-                                setCurrentMessage("Waiting for User Selection...");
-                                createPartyBtn.setVisibility(View.VISIBLE);
-                                joinPartyBtn.setVisibility(View.VISIBLE);
-                            }
-                        }
+                    FirebaseManageEngine.getPartiesRef().child(meDump.subordinatedParty).child("users").child(Global.curDeviceID)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
+                                    if(dataSnapshot2.exists()){
+                                        // Party Exists & Member Exists
+                                        Intent intent = new Intent(StartActivity.this, MainActivity.class);
+                                        intent.putExtra("UserDump", meDump);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                    }else{
+                                        // No Party Subordinated
+                                        Toast.makeText(StartActivity.this,"어느 파티에도 속해 있지 않습니다. 파티를 생성하거나 참가해주세요.", Toast.LENGTH_SHORT).show();
+                                        setCurrentMessage("Waiting for User Selection...");
+                                        createPartyBtn.setVisibility(View.VISIBLE);
+                                        joinPartyBtn.setVisibility(View.VISIBLE);
+                                    }
+                                }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
+                                }
+                            });
                 }else{
                     // Doesn't Exist
                     setCurrentMessage("Register as New User...");
@@ -113,7 +132,17 @@ public class StartActivity extends AppCompatActivity {
         createPartyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Party 생성 및 user push
+                DatabaseReference partyRef = FirebaseManageEngine.getPartiesRef();
+                String partyKey = partyRef.push().getKey();
+                Lgm.g("partykey: "+partyKey);
+                User me = new User(meDump.username, meDump.deviceID);
 
+                assert partyKey != null;
+                FirebaseManageEngine.pushSomething(partyRef.child(partyKey).child("users"), me.deviceID, me.toMap());
+
+                // UserDump에 기록
+                FirebaseManageEngine.getUserDumpListRef().child(me.deviceID).child("subParty").setValue(partyKey);
             }
         });
 
@@ -148,7 +177,8 @@ public class StartActivity extends AppCompatActivity {
                             public void onClick(View v) {
                                 final String joinCodeValue = joinCode.getText().toString();
                                 if(joinCodeValue.isEmpty()){
-
+                                    Toast.makeText(StartActivity.this,"입력 코드를 입력해주세요!", Toast.LENGTH_SHORT).show();
+                                    return;
                                 }
 
                                 // Check Party Existance
@@ -159,9 +189,14 @@ public class StartActivity extends AppCompatActivity {
                                                 if(!dataSnapshot.exists()){
                                                     // not available - no such data
                                                     Toast.makeText(StartActivity.this,"입력 코드의 파티는 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
-                                                }else if(dataSnapshot.getChildrenCount() < 2){
-                                                    // available
+                                                }else if(dataSnapshot.child("users").getChildrenCount() < 2){
+                                                    // available (추후에 참가 요청 보내기로 변경)
+                                                    DatabaseReference partyRef = FirebaseManageEngine.getPartiesRef();
+                                                    User me = new User(meDump.username, meDump.deviceID);
+                                                    FirebaseManageEngine.pushSomething(partyRef.child(joinCodeValue).child("users"), me.deviceID, me.toMap());
+
                                                     FirebaseManageEngine.registerJoinedPartyCode(joinCodeValue);
+
                                                     joinDialog.dismiss();
                                                 }else{
                                                     // not available - 2 people
