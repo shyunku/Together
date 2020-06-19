@@ -56,6 +56,9 @@ public class MoneyTransactionActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<MoneyTransaction> transactions = new ArrayList<>();
 
+    TextView totalValue;
+    TextView arrowDirection;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,15 +80,15 @@ public class MoneyTransactionActivity extends AppCompatActivity {
         transactionRecyclerView.setAdapter(mAdapter);
         transactionRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        TextView leftside = (TextView)findViewById(R.id.left_user_view);
-        TextView rightside = (TextView)findViewById(R.id.right_user_view);
+        TextView leftside = findViewById(R.id.left_user_view);
+        TextView rightside = findViewById(R.id.right_user_view);
 
-        Button addButton = (Button)findViewById(R.id.transaction_add_button);
-        Button settleButton = (Button)findViewById(R.id.transaction_settle_button);
-        Button settleAllButton = (Button)findViewById(R.id.settle_all_button);
+        Button addButton = findViewById(R.id.transaction_add_button);
+        Button settleButton = findViewById(R.id.transaction_settle_button);
+        Button settleAllButton = findViewById(R.id.settle_all_button);
 
-        final TextView totalValue = (TextView)findViewById(R.id.transaction_value_view);
-        final TextView arrowDirection = (TextView) findViewById(R.id.arrow_direction);
+        totalValue = findViewById(R.id.transaction_value_view);
+        arrowDirection = findViewById(R.id.arrow_direction);
 
         leftside.setText(Global.getOwner());
         rightside.setText(Global.getOpper());
@@ -105,7 +108,6 @@ public class MoneyTransactionActivity extends AppCompatActivity {
 
                 try {
                     final long standTamp = Global.transactionDateFormat.parse(stamp).getTime();
-                    Lgm.g("stamp: " + standTamp);
 
                     final DatabaseReference myref = FirebaseManageEngine.getPartyTransactionsRef();
                     myref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -136,8 +138,6 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                 }catch(ParseException e){
                     e.printStackTrace();
                 }
-
-
             }
         });
 
@@ -250,33 +250,7 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                 mAdapter.notifyDataSetChanged();
                 mLayoutManager.scrollToPosition(transactions.size()-1);
 
-                int profit = 0;
-                for(int i=0;i<transactions.size();i++){
-                    MoneyTransaction tr = transactions.get(i);
-                    if(!tr.isGeneral){
-                        profit = 0;
-                        continue;
-                    }
-                    int value = Integer.parseInt(tr.value);
-                    if(tr.OwedUsername.equals(Global.getOpper())) profit += value;
-                    else profit -= value;
-                }
-
-                if(profit == 0){
-                    totalValue.setText("- 원");
-                    arrowDirection.setText(" = ");
-                    totalValue.setTextColor(ContextCompat.getColor(MoneyTransactionActivity.this, R.color.pure_white));
-                }else{
-                    totalValue.setText(String.format("%d 원", Math.abs(profit)));
-                    if(profit>0) {
-                        arrowDirection.setText(" ← ");
-                        totalValue.setTextColor(ContextCompat.getColor(MoneyTransactionActivity.this, R.color.transaction_blue));
-                    }
-                    else {
-                        arrowDirection.setText(" → ");
-                        totalValue.setTextColor(ContextCompat.getColor(MoneyTransactionActivity.this, R.color.transaction_red));
-                    }
-                }
+                recalculate();
             }
 
             @Override
@@ -295,6 +269,7 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                 }
                 mAdapter.notifyDataSetChanged();
 
+                recalculate();
             }
 
             @Override
@@ -307,5 +282,35 @@ public class MoneyTransactionActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void recalculate(){
+        int profit = 0;
+        for(int i=0;i<transactions.size();i++){
+            MoneyTransaction tr = transactions.get(i);
+            if(!tr.isGeneral){
+                profit = 0;
+                continue;
+            }
+            int value = Integer.parseInt(tr.value);
+            if(tr.OwedUsername.equals(Global.getOpper())) profit += value;
+            else profit -= value;
+        }
+
+        if(profit == 0){
+            totalValue.setText("- 원");
+            arrowDirection.setText(" = ");
+            totalValue.setTextColor(ContextCompat.getColor(MoneyTransactionActivity.this, R.color.pure_white));
+        }else{
+            totalValue.setText(String.format("%d 원", Math.abs(profit)));
+            if(profit>0) {
+                arrowDirection.setText(" ← ");
+                totalValue.setTextColor(ContextCompat.getColor(MoneyTransactionActivity.this, R.color.transaction_blue));
+            }
+            else {
+                arrowDirection.setText(" → ");
+                totalValue.setTextColor(ContextCompat.getColor(MoneyTransactionActivity.this, R.color.transaction_red));
+            }
+        }
     }
 }

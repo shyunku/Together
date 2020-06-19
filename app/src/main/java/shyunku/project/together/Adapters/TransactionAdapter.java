@@ -11,11 +11,17 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
 import shyunku.project.together.Constants.Global;
+import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Objects.MoneyTransaction;
 import shyunku.project.together.R;
 
@@ -47,7 +53,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        MoneyTransaction trans = transactions.get(position);
+        final MoneyTransaction trans = transactions.get(position);
         //new LogEngine().sendLog("holder : "+trans.transactionName+" "+trans.OwedUsername+" "+trans.value+" "+trans.timestamp);
         if(holder.transName!= null)
             holder.transName.setText(trans.transactionName);
@@ -71,6 +77,24 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             holder.cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    final DatabaseReference ref = FirebaseManageEngine.getPartyTransactionsRef();
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for(DataSnapshot data : dataSnapshot.getChildren()) {
+                                MoneyTransaction transaction = data.getValue(MoneyTransaction.class);
+                                if(transaction.timestamp == trans.timestamp){
+                                    ref.child(data.getKey()).removeValue();
+                                    return;
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
             });
         }
