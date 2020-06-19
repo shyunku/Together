@@ -1,6 +1,7 @@
 package shyunku.project.together.Activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
@@ -479,6 +480,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         return "위도 : " + latitude + ", 경도 : "+longitude;
     }
 
+    @SuppressLint("DefaultLocale")
     private String getDistance(User u1, User u2){
         Location l1 = new Location("a");
         Location l2 = new Location("b");
@@ -488,7 +490,13 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         l2.setLongitude(u2.longitude);
         float dist = l1.distanceTo(l2);
 
-        return "약 "+dist+" m";
+        if(dist > 1000 * 30){
+            return String.format("약 %d km", (int)(dist / 1000));
+        }else if(dist > 1000){
+            return String.format("약 %.3f km", dist / 1000);
+        }else{
+            return String.format("약 %d m", (int)dist);
+        }
     }
 
     private void updateOpp(){
