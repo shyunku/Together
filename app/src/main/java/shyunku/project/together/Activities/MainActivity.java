@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().hide();
 
         TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
 
@@ -188,29 +189,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setView(viewGroup);
 
         builder.setNegativeButton("취소", null);
-        builder.setPositiveButton("등록", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                final String newUsername = username.getText().toString();
-
-                if(newUsername.length() < 2){
-                    Toast.makeText(MainActivity.this, "이름은 2자 이상 입력해주세요.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                if(usernameList.size() == 2){
-                    ref.child(usernameList.get(0)).removeValue();
-                }
-
-
-                me = new User(newUsername, Global.curDeviceID);
-                Map<String, Object> postVal = me.toMap();
-                Map<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put(Global.curDeviceID, postVal);
-
-                ref.updateChildren(childUpdates);
-            }
-        });
+        builder.setPositiveButton("등록", null);
 
         final AlertDialog dialog = builder.create();
         dialog.setCancelable(false);                // Prevent Back key
@@ -219,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onShow(DialogInterface dia) {
                 Button negativeBtn = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                Button positiveBtn = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 negativeBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -256,6 +236,31 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         warningDialog.show();
+                    }
+                });
+
+                positiveBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final String newUsername = username.getText().toString();
+
+                        if(newUsername.length() < 2){
+                            Toast.makeText(MainActivity.this, "이름은 2자 이상 입력해주세요.", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        if(usernameList.size() >= 2){
+                            ref.child(usernameList.get(0)).removeValue();
+                        }
+
+
+                        me = new User(newUsername, Global.curDeviceID);
+                        Map<String, Object> postVal = me.toMap();
+                        Map<String, Object> childUpdates = new HashMap<>();
+                        childUpdates.put(Global.curDeviceID, postVal);
+
+                        ref.updateChildren(childUpdates);
+                        dialog.dismiss();
                     }
                 });
             }
@@ -441,8 +446,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        getSupportActionBar().hide();
     }
 
     public void registerFCMKey(){
