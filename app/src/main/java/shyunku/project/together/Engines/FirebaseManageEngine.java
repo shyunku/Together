@@ -236,15 +236,14 @@ public class FirebaseManageEngine {
     }
 
     public static void getOppKeyFromFirebaseServer(){
-        DatabaseReference oppref = FirebaseManageEngine.getFreshLocalDB().getReference(Global.rootName+"/users");
+        DatabaseReference oppref = FirebaseManageEngine.getPartyRef(Global.curParty).child("users");
         oppref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     User opp = snapshot.getValue(User.class);
-                    String gainedName = snapshot.child("name").getValue().toString();
-                    if(gainedName.equals(Global.getOpper())){
-                        Global.setOppFCMkey(snapshot.child("token").getValue().toString());
+                    if(!Global.curDeviceID.equals(opp.deviceID)){
+                        Global.setOppFCMkey(opp.FCMtoken);
                         return;
                     }
                 }

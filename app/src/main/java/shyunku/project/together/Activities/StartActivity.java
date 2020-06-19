@@ -168,8 +168,6 @@ public class StartActivity extends AppCompatActivity {
                 final EditText joinCode = viewGroup.findViewById(R.id.join_code_view);
 
                 final AlertDialog joinDialog = builder.create();
-                joinDialog.setCancelable(false);
-                joinDialog.setCanceledOnTouchOutside(false);
                 joinDialog.setOnShowListener(new DialogInterface.OnShowListener() {
                     @Override
                     public void onShow(DialogInterface dialog) {

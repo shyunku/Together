@@ -13,8 +13,12 @@ import shyunku.project.together.Engines.Lgm;
 
 
 public class Global {
-    public static String version = "v0.15.11.451";
+    public static String version = "v0.15.13.456";
+
     public static String curDeviceID = "";
+    public static String curParty = "";
+
+
     public static String oppFCMkey = "";
 
     public static String OwnerName = "";

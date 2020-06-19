@@ -5,12 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -19,9 +14,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,11 +37,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.CustomViews.SquareProgressBarView;
 import shyunku.project.together.Engines.FirebaseManageEngine;
@@ -61,7 +48,6 @@ import shyunku.project.together.R;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
     UserDump meDump;
-    boolean isOppExist = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         meDump = (UserDump) intent.getSerializableExtra("UserDump");
+        Global.curParty = meDump.subordinatedParty;
 
         initialSetting();
         listenToUserInfo();
@@ -99,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
                     //myStatusBG.setBackgroundResource(me.getStatusBackgroundColorTag(MainActivity.this));
 
                     final TextView deviceIDt = findViewById(R.id.device_id);
-                    deviceIDt.setText("Device ID : "+Global.curDeviceID);
-                    final TextView Ver = findViewById(R.id.version);
-                    Ver.setText(Global.version +" |  "+Global.getOwner()+" 전용");
+                    deviceIDt.setText(String.format("Device ID : %s", Global.curDeviceID));
+                    final TextView versionView = findViewById(R.id.version);
+                    versionView.setText(String.format("%s |  %s", Global.version, Global.getOwner()));
 
                     registerFCMKey();
                 }
@@ -117,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
         final TextView oppStatusDescription = findViewById(R.id.opp_status_message);
         final TextView oppHappinessView = findViewById(R.id.opp_happiness);
         final ProgressBar oppHappinessBar = findViewById(R.id.opp_happiness_bar);
+
+        final Button requestButton = findViewById(R.id.request_button);
+        final Button viewLocation = findViewById(R.id.view_our_location);
 
         // Listen Opp Info
         userRef.addValueEventListener(new ValueEventListener() {
@@ -140,9 +130,16 @@ public class MainActivity extends AppCompatActivity {
                         final TextView statusTitle = findViewById(R.id.opp_status_title);
                         statusTitle.setText(String.format("%s의 프로필", Global.getOpper()));
 
-                        isOppExist = true;
+                        requestButton.setEnabled(true);
+                        viewLocation.setEnabled(true);
+
+                        return;
                     }
                 }
+
+                // No Opp
+                requestButton.setEnabled(false);
+                viewLocation.setEnabled(false);
             }
 
             @Override
@@ -157,6 +154,10 @@ public class MainActivity extends AppCompatActivity {
         final Button requestButton = findViewById(R.id.request_button);
         final SquareProgressBarView myHappinessProgressBar = findViewById(R.id.my_happiness_bar);
         final TextView partyCodeView = findViewById(R.id.party_code);
+        final Button goMoneyTransactionPage = findViewById(R.id.money_management_button);
+        final Button updateStatusButton = findViewById(R.id.update_status_button);
+        final Button viewLocation = findViewById(R.id.view_our_location);
+
         final DatabaseReference myRef = FirebaseManageEngine.getPartyRef(meDump.subordinatedParty).child("users").child(Global.curDeviceID);
 
         myHappinessProgressBar.setOnClickListener(new View.OnClickListener() {
@@ -269,7 +270,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final Button updateStatusButton = findViewById(R.id.update_status_button);
         updateStatusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -314,7 +314,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button viewLocation = (Button) findViewById(R.id.view_our_location);
         viewLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -323,7 +322,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final Button goMoneyTransactionPage = (Button)findViewById(R.id.money_management_button);
         goMoneyTransactionPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
