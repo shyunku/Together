@@ -10,11 +10,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -70,15 +72,15 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, CODE);
             }
         }
-        String id = Global.sha256(tm.getLine1Number());
+
+        // Not Immutable (app signature based)
+        @SuppressLint("HardwareIds")
+        String id = Global.sha256(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+
         Global.setCurrentDeviceID(id);
-
         new LogEngine().sendLog("DEVICE_ID = "+Global.curDeviceID);
+
         initialSetting();
-
-        // FCM KEY SETTING
-        //registerFCMKey();
-
         listenToUserInfo();
     }
 
@@ -204,7 +206,9 @@ public class MainActivity extends AppCompatActivity {
                 me = new User(newUsername, Global.curDeviceID);
                 Map<String, Object> postVal = me.toMap();
                 Map<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put(Global.rootName + "/users/" + Global.curDeviceID, postVal);
+                childUpdates.put(Global.curDeviceID, postVal);
+
+                ref.updateChildren(childUpdates);
             }
         });
 
