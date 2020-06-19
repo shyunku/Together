@@ -21,7 +21,7 @@
         app:layout_constraintStart_toStartOf="@+id/opp_happiness_bar"
         app:layout_constraintTop_toTopOf="@+id/opp_happiness_bar" />
 
-    <shyunku.project.together.Engines.SquareProgressBarView
+    <shyunku.project.together.CustomViews.SquareProgressBarView
         android:id="@+id/opp_happiness_bar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
@@ -210,7 +210,7 @@
         app:layout_constraintBottom_toTopOf="@+id/version"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <shyunku.project.together.Engines.SquareProgressBarView
+    <shyunku.project.together.CustomViews.SquareProgressBarView
         android:id="@+id/my_happiness_bar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"

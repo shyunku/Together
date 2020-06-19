@@ -32,12 +32,6 @@ public class User {
         this.deviceID = deviceID;
     }
 
-    public User(String username, String deviceID, String FCMtoken){
-        this.name = username;
-        this.deviceID = deviceID;
-        this.FCMtoken = FCMtoken;
-    }
-
     public String getStatusDescription(Context context){
         if(status.equals(context.getResources().getString(R.string.status_boring_message)))
             return context.getResources().getString(R.string.status_boring_description);

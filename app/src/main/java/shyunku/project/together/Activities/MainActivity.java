@@ -62,9 +62,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().hide();
-
-        TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)!=PackageManager.PERMISSION_GRANTED){
             if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)){
@@ -73,13 +70,6 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, CODE);
             }
         }
-
-        // Not Immutable (app signature based)
-        @SuppressLint("HardwareIds")
-        String id = Global.sha256(Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
-
-        Global.setCurrentDeviceID(id);
-        new LogEngine().sendLog("DEVICE_ID = "+Global.curDeviceID);
 
         initialSetting();
         listenToUserInfo();

@@ -20,10 +20,13 @@ import org.json.JSONObject;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import shyunku.project.together.Activities.MainActivity;
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Objects.User;
+import shyunku.project.together.Objects.UserDump;
 import shyunku.project.together.R;
 
 public class FirebaseManageEngine {
@@ -51,6 +54,27 @@ public class FirebaseManageEngine {
     public static FirebaseDatabase getFreshLocalDB(){
         RenewDatabase();
         return LocalDB;
+    }
+
+    public static DatabaseReference getPartiesRef(){
+        return FirebaseDatabase.getInstance().getReference().child("parties");
+    }
+
+    public static DatabaseReference getUserDumpListRef(){
+        return FirebaseDatabase.getInstance().getReference().child("userDumplist");
+    }
+
+    public static void pushUserDump(UserDump userDump){
+        DatabaseReference ref = getUserDumpListRef();
+        Map<String, Object> post = userDump.toMap();
+        Map<String, Object> child = new HashMap<>();
+        child.put(userDump.deviceID, post);
+
+        ref.updateChildren(child);
+    }
+
+    public static void registerJoinedPartyCode(String code){
+        FirebaseManageEngine.getUserDumpListRef().child(Global.curDeviceID).child("subParty").setValue(code);
     }
 
     public static void sendNotificationChatMessage(final String msgContent) {
