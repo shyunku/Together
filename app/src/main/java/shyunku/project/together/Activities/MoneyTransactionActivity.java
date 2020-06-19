@@ -1,5 +1,6 @@
 package shyunku.project.together.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,6 +44,7 @@ import java.util.Map;
 import shyunku.project.together.Adapters.TransactionAdapter;
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
+import shyunku.project.together.Engines.Lgm;
 import shyunku.project.together.Objects.Chat;
 import shyunku.project.together.Objects.MoneyTransaction;
 import shyunku.project.together.Objects.User;
@@ -103,17 +105,22 @@ public class MoneyTransactionActivity extends AppCompatActivity {
 
                 try {
                     final long standTamp = Global.transactionDateFormat.parse(stamp).getTime();
+                    Lgm.g("stamp: " + standTamp);
 
                     final DatabaseReference myref = FirebaseManageEngine.getPartyTransactionsRef();
                     myref.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             for(DataSnapshot data : dataSnapshot.getChildren()){
-                                String str = data.child("timestamp").getValue().toString();
+                                MoneyTransaction transaction = data.getValue(MoneyTransaction.class);
+                                assert transaction != null;
+                                String str = transaction.timestamp;
+
+                                final String dataKey = data.getKey();
                                 try {
                                     long time = Global.transactionDateFormat.parse(str).getTime();
                                     if(time <= standTamp) {
-                                        myref.child(data.getKey()).removeValue();
+                                        myref.child(dataKey).removeValue();
                                     }
                                 }catch(ParseException e){
                                     e.printStackTrace();
@@ -222,6 +229,7 @@ public class MoneyTransactionActivity extends AppCompatActivity {
         });
 
         transRef.addChildEventListener(new ChildEventListener() {
+            @SuppressLint("DefaultLocale")
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String s) {
                 MoneyTransaction transaction = snapshot.getValue(MoneyTransaction.class);
@@ -259,7 +267,7 @@ public class MoneyTransactionActivity extends AppCompatActivity {
                     arrowDirection.setText(" = ");
                     totalValue.setTextColor(ContextCompat.getColor(MoneyTransactionActivity.this, R.color.pure_white));
                 }else{
-                    totalValue.setText((int)Math.abs(profit)+" 원");
+                    totalValue.setText(String.format("%d 원", Math.abs(profit)));
                     if(profit>0) {
                         arrowDirection.setText(" ← ");
                         totalValue.setTextColor(ContextCompat.getColor(MoneyTransactionActivity.this, R.color.transaction_blue));

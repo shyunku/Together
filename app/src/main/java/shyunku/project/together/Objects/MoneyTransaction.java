@@ -1,35 +1,29 @@
 package shyunku.project.together.Objects;
 
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.PropertyName;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MoneyTransaction {
-    public boolean isGeneral;
+    @PropertyName("type")
+    public boolean isGeneral = true;
 
     //General
-    public String transactionName;
-    public String OwedUsername;
-    public String value;
+    @PropertyName("name")
+    public String transactionName = "";
+    public String OwedUsername = "";
+    public String value = "";
 
     //Common
-    public String timestamp;
+    public String timestamp = "";
 
     public MoneyTransaction(){
-        init();
-    }
 
-    private void init(){
-        transactionName = "";
-        OwedUsername = "";
-        value = "";
-        timestamp = "";
-        isGeneral = true;
     }
 
     public MoneyTransaction(String name, String owedUsername, String value, String timestamp){
-        init();
         isGeneral = true;
         this.transactionName = name;
         this.OwedUsername = owedUsername;
@@ -38,7 +32,6 @@ public class MoneyTransaction {
     }
 
     public MoneyTransaction(String timestamp){
-        init();
         isGeneral = false;
         this.timestamp = timestamp;
     }
