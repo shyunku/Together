@@ -240,10 +240,8 @@ public class FirebaseManageEngine {
     }
 
     public static void noticeWhoIam(Context context){
-        TelephonyManager tm = (TelephonyManager)context.getSystemService(context.TELEPHONY_SERVICE);
-        @SuppressLint("MissingPermission")
-        String id = Global.sha256(tm.getLine1Number());
-        Global.setCurrentDeviceID(id);
+        @SuppressLint("HardwareIds") final String deviceId = Global.sha256(Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID));
+        Global.setCurrentDeviceID(deviceId);
         Global.introduceMyself();
     }
 

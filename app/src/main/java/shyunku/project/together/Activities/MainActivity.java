@@ -1,7 +1,6 @@
 package shyunku.project.together.Activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,7 +10,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,20 +18,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -79,10 +74,17 @@ public class MainActivity extends AppCompatActivity {
                     User me = dataSnapshot.getValue(User.class);
                     Global.OwnerName = me.name;
 
-                    myStatusView.setText(me.status);
-                    myStatusDescription.setText(me.getStatusDescription(MainActivity.this));
+                    if(myStatusView != null){
+                        myStatusView.setText(me.status);
+                    }
+                    if(myStatusDescription != null) {
+                        myStatusDescription.setText(me.getStatusDescription(MainActivity.this));
+                    }
                     myHappinessView.setText(me.happiness+"");
-                    myHappinessBar.setProgress(me.happiness);
+                    if(myHappinessBar != null){
+                        myHappinessBar.setProgress(me.happiness);
+                    }
+
                     //myStatusBG.setBackgroundResource(me.getStatusBackgroundColorTag(MainActivity.this));
 
                     final TextView deviceIDt = findViewById(R.id.device_id);
@@ -118,14 +120,19 @@ public class MainActivity extends AppCompatActivity {
                         User opp = snapshot.getValue(User.class);
                         Global.OpperName = opp.name;
 
-                        oppStatusView.setText(opp.status);
-                        oppStatusDescription.setText(opp.getStatusDescription(MainActivity.this));
+                        if(oppStatusView != null) {
+                            oppStatusView.setText(opp.status);
+                        }
+                        if(oppStatusDescription != null) {
+                            oppStatusDescription.setText(opp.getStatusDescription(MainActivity.this));
+                        }
                         oppHappinessView.setText(opp.happiness+"");
-                        oppHappinessBar.setProgress(opp.happiness);
+                        if(myHappinessBar != null) {
+                            oppHappinessBar.setProgress(opp.happiness);
+                        }
                         //oppStatusBG.setBackgroundResource(opp.getStatusBackgroundColorTag(MainActivity.this));
 
                         Global.setOppFCMkey(opp.FCMtoken);
-                        //new LogEngine().sendLog("opp FCM_KEY = "+opp.FCMtoken);
 
                         final TextView statusTitle = findViewById(R.id.opp_status_title);
                         statusTitle.setText(String.format("%s의 프로필", Global.getOpper()));
@@ -160,69 +167,71 @@ public class MainActivity extends AppCompatActivity {
 
         final DatabaseReference myRef = FirebaseManageEngine.getPartyRef().child("users").child(Global.curDeviceID);
 
-        myHappinessProgressBar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                View viewGroup = inflater.inflate(R.layout.happiness_update, (ViewGroup)findViewById(R.id.happiness_update_layout));
-                builder.setTitle("컨디션 지수 업데이트");
-                builder.setView(viewGroup );
+        if(myHappinessProgressBar != null) {
+            myHappinessProgressBar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    View viewGroup = inflater.inflate(R.layout.happiness_update, (ViewGroup) findViewById(R.id.happiness_update_layout));
+                    builder.setTitle("컨디션 지수 업데이트");
+                    builder.setView(viewGroup);
 
-                final SeekBar seekBar = (SeekBar)viewGroup.findViewById(R.id.happiness_seekBar);
-                final TextView seekBarValue = (TextView)viewGroup.findViewById(R.id.happiness_monitor);
+                    final SeekBar seekBar = (SeekBar) viewGroup.findViewById(R.id.happiness_seekBar);
+                    final TextView seekBarValue = (TextView) viewGroup.findViewById(R.id.happiness_monitor);
 
-                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()) {
-                            // Already Exists
-                            User me = dataSnapshot.getValue(User.class);
-                            seekBarValue.setText(me.happiness+"");
-                            seekBar.setMax(100);
-                            seekBar.setMin(1);
-                            seekBar.setProgress(me.happiness);
+                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                // Already Exists
+                                User me = dataSnapshot.getValue(User.class);
+                                seekBarValue.setText(me.happiness + "");
+                                seekBar.setMax(100);
+                                seekBar.setMin(1);
+                                seekBar.setProgress(me.happiness);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
+                        }
+                    });
 
-                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                        seekBarValue.setText(i+"");
-                    }
+                    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                            seekBarValue.setText(i + "");
+                        }
 
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
 
-                    }
-                });
-                builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    });
+                    builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
 
-                    }
-                });
-                builder.setPositiveButton("업데이트", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        myRef.child("happiness").setValue(seekBar.getProgress());
-                    }
-                });
+                        }
+                    });
+                    builder.setPositiveButton("업데이트", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            myRef.child("happiness").setValue(seekBar.getProgress());
+                        }
+                    });
 
-                builder.show();
-            }
-        });
+                    builder.show();
+                }
+            });
+        }
 
         goTogetherTalkButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -365,5 +374,20 @@ public class MainActivity extends AppCompatActivity {
                         // Log and toast
                     }
                 });
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        setContentView(R.layout.activity_main);
+        super.onConfigurationChanged(newConfig);
+
+        setContentView(R.layout.activity_main);
+
+        Intent intent = getIntent();
+        meDump = (UserDump) intent.getSerializableExtra("UserDump");
+        Global.curParty = meDump.subordinatedParty;
+
+        initialSetting();
+        listenToUserInfo();
     }
 }
