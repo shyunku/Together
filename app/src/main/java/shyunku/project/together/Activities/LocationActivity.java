@@ -193,6 +193,10 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         showOpp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!opp.allowLocShare){
+                    Toast.makeText(LocationActivity.this, "상대가 위치 공개를 하지 않았습니다!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(new LatLng(opp.latitude, opp.longitude));
                 gmap.moveCamera(cameraUpdate);
             }
@@ -285,7 +289,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     @Override
-    protected  void onStart(){
+    protected void onStart(){
         super.onStart();
         Log.d(TAG, "onStart");
         if(checkPermission()){
@@ -297,7 +301,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     @Override
-    protected  void onStop(){
+    protected void onStop(){
         super.onStop();
         if(mFusedLocationClient != null){
             Log.d(TAG, "onStop : call stopLocationUpdates");
@@ -357,6 +361,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
             isAutoFocus = false;
         }
 
+        if(!opp.allowLocShare) return;
 
         markerOptions.position(oppCurrentLatLng);
         markerOptions.title(toAddressString(oppCurrentLatLng.latitude, oppCurrentLatLng.longitude));

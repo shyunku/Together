@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
     private void initialSetting(){
         final Button goTogetherTalkButton = findViewById(R.id.go_together_talk);
         final Button requestButton = findViewById(R.id.request_button);
-        final SquareProgressBarView myHappinessProgressBar = findViewById(R.id.my_happiness_bar);
+        final TextView myHappinessView = findViewById(R.id.my_happiness);
         final TextView partyCodeView = findViewById(R.id.party_code);
         final Button goMoneyTransactionPage = findViewById(R.id.money_management_button);
         final Button updateStatusButton = findViewById(R.id.update_status_button);
@@ -167,8 +167,8 @@ public class MainActivity extends AppCompatActivity {
 
         final DatabaseReference myRef = FirebaseManageEngine.getPartyRef().child("users").child(Global.curDeviceID);
 
-        if(myHappinessProgressBar != null) {
-            myHappinessProgressBar.setOnClickListener(new View.OnClickListener() {
+        if(myHappinessView != null) {
+            myHappinessView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
