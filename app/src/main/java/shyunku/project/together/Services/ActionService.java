@@ -2,7 +2,6 @@ package shyunku.project.together.Services;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.util.Log;
 
 import shyunku.project.together.Engines.FirebaseManageEngine;
 

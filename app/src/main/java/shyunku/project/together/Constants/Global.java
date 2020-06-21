@@ -1,7 +1,6 @@
 package shyunku.project.together.Constants;
 
 import android.content.Context;
-import android.provider.Settings;
 import android.widget.Toast;
 
 import java.security.MessageDigest;
@@ -13,7 +12,7 @@ import shyunku.project.together.Engines.Lgm;
 
 
 public class Global {
-    public static String version = "v1.1.3.530";
+    public static String version = "v1.1.4.531";
 
     public static String curDeviceID = "";
     public static String curParty = "";

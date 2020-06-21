@@ -33,7 +33,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
 import shyunku.project.together.Constants.Global;
-import shyunku.project.together.CustomViews.SquareProgressBarView;
 import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Engines.Lgm;
 import shyunku.project.together.Objects.User;

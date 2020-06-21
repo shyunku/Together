@@ -1,9 +1,7 @@
 package shyunku.project.together.Services;
 
-import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -11,7 +9,6 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import shyunku.project.together.Activities.LocationActivity;
-import shyunku.project.together.R;
 
 public class LocationUpdateService extends Service {
     public static final int NOTIFICATION_ID = 1500;
