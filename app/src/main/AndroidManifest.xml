@@ -67,9 +67,6 @@
         <service android:name=".Services.ActionService"
             android:exported="false">
         </service>
-        <service android:name=".Services.LocationUpdateService"
-            android:exported="false">
-        </service>
     </application>
 
 </manifest>

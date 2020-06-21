@@ -12,7 +12,7 @@ import shyunku.project.together.Engines.Lgm;
 
 
 public class Global {
-    public static String version = "v1.1.4.531";
+    public static String version = "v1.1.7.534";
 
     public static String curDeviceID = "";
     public static String curParty = "";

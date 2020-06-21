@@ -57,7 +57,6 @@ import java.util.Map;
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Engines.Lgm;
-import shyunku.project.together.Engines.LocationUpdateNotificationManager;
 import shyunku.project.together.Objects.User;
 import shyunku.project.together.R;
 
@@ -67,8 +66,8 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
 
     private static final String TAG = "google_map";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
-    private static final int UPDATE_INTERVAL_MS = 10000;                //업데이트 주기 = 10초
-    private static final int FASTEST_UPDATE_INTERVAL_MS = 5000;        // 최소 업데이트 주기 = 5초
+    private static final int UPDATE_INTERVAL_MS = 5000;                //업데이트 주기 = 5초
+    private static final int FASTEST_UPDATE_INTERVAL_MS = 1000;        // 최소 업데이트 주기 = 1초
 
     private static final int PERMISSONS_REQUEST_CODE = 100;
     boolean needRequest = false;
@@ -90,8 +89,6 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     TextView myCurLocView, oppCurLocView, distView;
     Button updateOpp, showOpp;
     Switch allowUpdate;
-
-    public static LocationUpdateNotificationManager man;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
