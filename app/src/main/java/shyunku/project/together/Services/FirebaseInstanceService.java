@@ -16,6 +16,11 @@ import android.location.LocationManager;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,8 +31,10 @@ import com.google.firebase.messaging.RemoteMessage;
 import shyunku.project.together.Activities.MainActivity;
 import shyunku.project.together.Activities.TogetherTalkActivity;
 import shyunku.project.together.Constants.Global;
+import shyunku.project.together.Engines.BackgroundLocationFetcher;
 import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Engines.Lgm;
+import shyunku.project.together.Engines.LocationFetcherListener;
 import shyunku.project.together.R;
 
 public class FirebaseInstanceService extends FirebaseMessagingService {
@@ -136,10 +143,12 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
     }
 
     private void updateLocationInProcess(){
+        Lgm.g("background? "+(isForeground()?"false":"true"));
         //상대가 권한을 얻었다고 가정
         if(isForeground())return;
 
-        DatabaseReference locref = FirebaseManageEngine.getPartyUsersRef().child(Global.curDeviceID);
+        // Background
+        final DatabaseReference locref = FirebaseManageEngine.getPartyUsersRef().child(Global.curDeviceID);
         DatabaseReference refs = locref.child("location_share");
         refs.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -154,17 +163,17 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
             }
         });
 
-        String locationProvider = LocationManager.GPS_PROVIDER;
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        @SuppressLint("MissingPermission") Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-        if (lastKnownLocation != null) {
-            double lng = lastKnownLocation.getLongitude();
-            double lat = lastKnownLocation.getLatitude();
-            //new LogEngine().sendLog(Global.getOwner()+"long : "+lng+", lat : "+lat);
+        BackgroundLocationFetcher.getInstance().onResultFetched(new LocationFetcherListener<LatLng>() {
+            @Override
+            public void locationFetchListen(LatLng latLng) {
+                double lng = latLng.longitude;
+                double lat = latLng.latitude;
+                Lgm.g("Background Updated: long : "+lng+", lat : "+lat);
 
-            locref.child("longitude").setValue(lng);
-            locref.child("latitude").setValue(lat);
-        }
+                locref.child("longitude").setValue(lng);
+                locref.child("latitude").setValue(lat);
+            }
+        });
     }
 
     public boolean isForeground(){
