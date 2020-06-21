@@ -246,7 +246,7 @@ public class FirebaseManageEngine {
     }
 
     public static void getOppKeyFromFirebaseServer(){
-        DatabaseReference oppref = FirebaseManageEngine.getPartyRef().child("users");
+        DatabaseReference oppref = FirebaseManageEngine.getPartyUsersRef();
         oppref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
