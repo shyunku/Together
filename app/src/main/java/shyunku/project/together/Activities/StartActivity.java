@@ -36,6 +36,7 @@ import java.util.Map;
 import shyunku.project.together.Constants.Global;
 import shyunku.project.together.Engines.FirebaseManageEngine;
 import shyunku.project.together.Engines.Lgm;
+import shyunku.project.together.Engines.Util;
 import shyunku.project.together.Objects.User;
 import shyunku.project.together.Objects.UserDump;
 import shyunku.project.together.R;
@@ -256,13 +257,7 @@ public class StartActivity extends AppCompatActivity {
                                         // resume register
                                     }
                                 })
-                                .setPositiveButton("등록 안함", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // cancel register
-                                        finish();
-                                    }
-                                });
+                                .setPositiveButton("종료", null);
 
                         final AlertDialog warningDialog = warningBuilder.create();
                         warningDialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -272,7 +267,8 @@ public class StartActivity extends AppCompatActivity {
                                 cancelAll.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        Toast.makeText(StartActivity.this, "다시 등록하려면 애플리케이션을 재시작 해야합니다.", Toast.LENGTH_LONG).show();
+                                        //Toast.makeText(StartActivity.this, "다시 등록하려면 애플리케이션을 재시작 해야합니다.", Toast.LENGTH_LONG).show();
+                                        Util.terminateApp(StartActivity.this, 0);
                                         warningDialog.dismiss();
                                         dialog.dismiss();
                                     }
