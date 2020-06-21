@@ -72,8 +72,8 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
 
     private static final String TAG = "google_map";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
-    private static final int UPDATE_INTERVAL_MS = 30000;                //업데이트 주기 = 30초
-    private static final int FASTEST_UPDATE_INTERVAL_MS = 15000;        // 최소 업데이트 주기 = 15초
+    private static final int UPDATE_INTERVAL_MS = 10000;                //업데이트 주기 = 10초
+    private static final int FASTEST_UPDATE_INTERVAL_MS = 5000;        // 최소 업데이트 주기 = 5초
 
     private static final int PERMISSONS_REQUEST_CODE = 100;
     boolean needRequest = false;
@@ -112,17 +112,6 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         allowUpdate = (Switch)findViewById(R.id.auto_location_update);
 
         final DatabaseReference uref = FirebaseManageEngine.getPartyUsersRef();
-        uref.child(Global.curDeviceID).child("location_share").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Boolean allowed = dataSnapshot.getValue(Boolean.class);
-                //allowUpdate.setChecked(allowed);
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
         // Listen My Info
         uref.child(Global.curDeviceID).addValueEventListener(new ValueEventListener() {
             @Override
@@ -131,8 +120,9 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
                     // Already Exists
                     me = dataSnapshot.getValue(User.class);
 
-                    myCurLocView.setText("내 위치 : "+toAddressString(me.latitude, me.longitude));
-                    distView.setText("사이 거리 : "+getDistance(me, opp));
+                    assert me != null;
+                    myCurLocView.setText(String.format("내 위치 : %s", toAddressString(me.latitude, me.longitude)));
+                    distView.setText(String.format("사이 거리 : %s", getDistance(me, opp)));
                     allowUpdate.setChecked(me.allowLocShare);
                 }
             }
@@ -147,18 +137,16 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         uref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<String> users = new ArrayList<>();
 
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     String iteratingDeviceID = (String) snapshot.child("deviceID").getValue();
-                    String username = (String) snapshot.child("name").getValue();
-                    users.add(username);
-
+                    assert iteratingDeviceID != null;
                     if(!iteratingDeviceID.equals(Global.curDeviceID)){
                         opp = snapshot.getValue(User.class);
 
-                        oppCurLocView.setText("상대 위치 : "+toAddressString(opp.latitude, opp.longitude));
-                        distView.setText("서로 간의 거리 : "+getDistance(me, opp));
+                        assert opp != null;
+                        oppCurLocView.setText(String.format("상대 위치 : %s", toAddressString(opp.latitude, opp.longitude)));
+                        distView.setText(String.format("서로 간의 거리 : %s", getDistance(me, opp)));
                     }
                 }
             }
@@ -186,6 +174,10 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         updateOpp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!opp.allowLocShare){
+                    Toast.makeText(LocationActivity.this, "상대가 위치 공개를 하지 않았습니다!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 FirebaseManageEngine.sendLocationRequestMessage();
             }
         });

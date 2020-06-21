@@ -144,25 +144,12 @@ public class FirebaseInstanceService extends FirebaseMessagingService {
 
     private void updateLocationInProcess(){
         Lgm.g("background? "+(isForeground()?"false":"true"));
-        //상대가 권한을 얻었다고 가정
+
+        //상대(기기 주인)가 권한을 얻었다고 가정
         if(isForeground())return;
 
         // Background
         final DatabaseReference locref = FirebaseManageEngine.getPartyUsersRef().child(Global.curDeviceID);
-        DatabaseReference refs = locref.child("location_share");
-        refs.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                boolean isShareAllowed = dataSnapshot.getValue(Boolean.class);
-                Lgm.g(isShareAllowed+"");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
         BackgroundLocationFetcher.getInstance().onResultFetched(new LocationFetcherListener<LatLng>() {
             @Override
             public void locationFetchListen(LatLng latLng) {
